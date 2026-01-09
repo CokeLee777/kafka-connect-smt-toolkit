@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: kafka
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/testdb
-    username: root
-    password: 11111111
