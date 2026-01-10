@@ -44,6 +44,8 @@ dependencies {
     testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
     testImplementation "org.testcontainers:localstack:${testcontainersVersion}"
 
+    testImplementation "org.apache.kafka:connect-api:${kafkaVersion}"
+    testImplementation "org.apache.kafka:connect-transforms:${kafkaVersion}"
     testImplementation "com.redis.testcontainers:testcontainers-redis-junit:1.6.4"
     testImplementation "org.slf4j:slf4j-simple:${slf4jVersion}"
 }
