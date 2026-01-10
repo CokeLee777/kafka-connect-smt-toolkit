@@ -1,5 +1,9 @@
 package connect.smt.claimcheck;
 
+import java.net.URI;
+import java.util.Map;
+import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
@@ -7,14 +11,30 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.net.URI;
-import java.util.Map;
-
 public class S3Storage implements ClaimCheckStorage {
 
   public static final String CONFIG_BUCKET_NAME = "claimcheck.s3.bucket.name";
   public static final String CONFIG_REGION = "claimcheck.s3.region";
   public static final String CONFIG_ENDPOINT_OVERRIDE = "claimcheck.s3.endpoint.override";
+  public static final ConfigDef CONFIG_DEF =
+      new ConfigDef()
+          .define(
+              CONFIG_BUCKET_NAME,
+              ConfigDef.Type.STRING,
+              ConfigDef.Importance.HIGH,
+              "S3 Bucket Name")
+          .define(
+              CONFIG_REGION,
+              ConfigDef.Type.STRING,
+              "ap-northeast-2",
+              ConfigDef.Importance.MEDIUM,
+              "AWS Region")
+          .define(
+              CONFIG_ENDPOINT_OVERRIDE,
+              ConfigDef.Type.STRING,
+              null,
+              ConfigDef.Importance.LOW,
+              "S3 Endpoint Override");
 
   private String bucketName;
   private String region;
@@ -42,17 +62,17 @@ public class S3Storage implements ClaimCheckStorage {
 
   @Override
   public void configure(Map<String, ?> configs) {
-    this.bucketName = getRequiredString(configs, CONFIG_BUCKET_NAME);
-    this.region = getOptionalString(configs, CONFIG_REGION);
-    this.endpointOverride = getOptionalString(configs, CONFIG_ENDPOINT_OVERRIDE);
+    SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
+
+    this.bucketName = config.getString(CONFIG_BUCKET_NAME);
+    this.region = config.getString(CONFIG_REGION);
+    this.endpointOverride = config.getString(CONFIG_ENDPOINT_OVERRIDE);
 
     S3ClientBuilder builder =
         S3Client.builder().credentialsProvider(DefaultCredentialsProvider.builder().build());
 
-    if (this.region != null) {
+    if (this.region != null && !region.isBlank()) {
       builder.region(Region.of(this.region));
-    } else {
-      builder.region(Region.AP_NORTHEAST_2);
     }
 
     if (this.endpointOverride != null && !this.endpointOverride.isBlank()) {
@@ -62,34 +82,6 @@ public class S3Storage implements ClaimCheckStorage {
     }
 
     this.s3Client = builder.build();
-  }
-
-  private static String getRequiredString(Map<String, ?> configs, String key) {
-    Object value = configs.get(key);
-    if (value == null) {
-      throw new IllegalArgumentException(key + " is required");
-    }
-    if (!(value instanceof String str)) {
-      throw new IllegalArgumentException(key + " must be a String");
-    }
-    if (str.isBlank()) {
-      throw new IllegalArgumentException(key + " must not be blank");
-    }
-    return str;
-  }
-
-  private static String getOptionalString(Map<String, ?> configs, String key) {
-    Object value = configs.get(key);
-    if (value == null) {
-      return null;
-    }
-    if (!(value instanceof String str)) {
-      throw new IllegalArgumentException(key + " must be a String");
-    }
-    if (str.isBlank()) {
-      return null;
-    }
-    return str;
   }
 
   @Override

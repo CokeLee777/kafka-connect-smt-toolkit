@@ -1,5 +1,6 @@
 package connect.smt.claimcheck;
 
+import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,7 @@ class S3StorageConfigureTest {
   }
 
   @Test
-  @DisplayName("실패: 버킷 이름이 없으면 예외(IllegalArgumentException)가 발생해야 한다")
+  @DisplayName("실패: 버킷 이름이 없으면 예외(ConfigException)가 발생해야 한다")
   void configureFailNoBucket() {
     // Given
     S3Storage storage = new S3Storage();
@@ -53,8 +54,10 @@ class S3StorageConfigureTest {
     configs.put("claimcheck.s3.region", "ap-northeast-2");
 
     // When & Then
-    IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> storage.configure(configs));
-    assertEquals("claimcheck.s3.bucket.name is required", exception.getMessage());
+    ConfigException exception =
+        assertThrows(ConfigException.class, () -> storage.configure(configs));
+    assertEquals(
+        "Missing required configuration \"claimcheck.s3.bucket.name\" which has no default value.",
+        exception.getMessage());
   }
 }
