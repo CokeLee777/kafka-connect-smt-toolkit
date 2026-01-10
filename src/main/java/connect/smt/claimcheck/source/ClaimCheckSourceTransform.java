@@ -50,6 +50,8 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
               ConfigDef.Importance.HIGH,
               "Payload size threshold in bytes");
 
+  public ClaimCheckSourceTransform() {}
+
   @Override
   public void configure(Map<String, ?> configs) {
     SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
@@ -103,10 +105,10 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
   }
 
   private byte[] getBytesFromValue(Object value) {
-    if (value instanceof byte[] bytes) {
-      return bytes;
-    } else if (value instanceof String str) {
-      return str.getBytes(StandardCharsets.UTF_8);
+    if (value instanceof byte[]) {
+      return (byte[]) value;
+    } else if (value instanceof String) {
+      return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
     log.warn("Unsupported value type for Claim Check: {}", value.getClass().getName());

@@ -4,10 +4,10 @@ plugins {
 }
 
 group = 'com.github.cokelee777'
-version = '1.0.0-SNAPSHOT'
+version = '1.0.0'
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 repositories {
     mavenCentral()
@@ -60,8 +60,15 @@ shadowJar {
     // 'all' 분류자를 붙여서 일반 jar와 구분 (예: my-plugin-1.0.0-all.jar)
     archiveClassifier.set('all')
 
+    dependencies {
+        exclude(dependency("org.apache.kafka:.*"))
+        exclude(dependency("org.slf4j:.*"))
+    }
+
     // 충돌 방지를 위한 패키지 재배치 (Relocation) - 선택 사항이지만 권장
     // 예: 내가 쓰는 Jedis 버전과 Kafka Connect가 내부적으로 쓰는 Jedis가 다를 경우를 대비
-    relocate 'redis.clients', 'com.example.smt.shadow.redis.clients'
-    relocate 'software.amazon.awssdk', 'com.example.smt.shadow.awssdk'
+    relocate 'redis.clients', 'connect.smt.claimcheck.shadow.redis.clients'
+    relocate 'software.amazon.awssdk', 'connect.smt.claimcheck.shadow.awssdk'
+
+    mergeServiceFiles()
 }
