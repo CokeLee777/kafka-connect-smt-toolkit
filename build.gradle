@@ -4,46 +4,51 @@ plugins {
 }
 
 group = 'com.github.cokelee777'
-version = '1.0.0-SNAPSHOT'
+version = '1.0.0'
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 repositories {
     mavenCentral()
 }
 
 ext {
-    kafkaVersion = '3.9.0'
-    awsSdkVersion = '2.30.30'
-    jedisVersion = '5.2.0'
+    kafkaVersion = '3.8.1'
+    awsSdkVersion = '2.41.3'
+    jedisVersion = '7.2.0'
 
-    // 테스트 도구 버전
-    junitVersion = '5.11.4'
-    testcontainersVersion = '1.20.4'
-    mockitoVersion = '5.14.2'
-    slf4jVersion = '2.0.16'
+    junitVersion = '5.11.0'
+    mockitoVersion = '5.21.0'
+    testcontainersVersion = '1.21.4'
+    slf4jVersion = '2.0.17'
 }
 
 dependencies {
     compileOnly "org.apache.kafka:connect-api:${kafkaVersion}"
     compileOnly "org.apache.kafka:connect-transforms:${kafkaVersion}"
+    compileOnly "org.apache.kafka:connect-json:${kafkaVersion}"
 
     implementation "software.amazon.awssdk:s3:${awsSdkVersion}"
     implementation "redis.clients:jedis:${jedisVersion}"
 
     compileOnly "org.slf4j:slf4j-api:${slf4jVersion}"
 
-    // --- 테스트 의존성 ---
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+
     testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
     testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
     testImplementation "org.testcontainers:localstack:${testcontainersVersion}"
-    testImplementation "com.redis.testcontainers:testcontainers-redis-junit:1.6.4"
 
+    testImplementation "org.apache.kafka:connect-api:${kafkaVersion}"
+    testImplementation "org.apache.kafka:connect-transforms:${kafkaVersion}"
+    testImplementation "org.apache.kafka:connect-json:${kafkaVersion}"
+    testImplementation "com.redis.testcontainers:testcontainers-redis-junit:1.6.4"
     testImplementation "org.slf4j:slf4j-simple:${slf4jVersion}"
 }
 
@@ -56,9 +61,17 @@ test {
 shadowJar {
     // 'all' 분류자를 붙여서 일반 jar와 구분 (예: my-plugin-1.0.0-all.jar)
     archiveClassifier.set('all')
+    destinationDirectory = file("${buildDir}/libs/kafka-connect-smt-toolkit")
+
+    dependencies {
+        exclude(dependency("org.apache.kafka:.*"))
+        exclude(dependency("org.slf4j:.*"))
+    }
 
     // 충돌 방지를 위한 패키지 재배치 (Relocation) - 선택 사항이지만 권장
     // 예: 내가 쓰는 Jedis 버전과 Kafka Connect가 내부적으로 쓰는 Jedis가 다를 경우를 대비
-    relocate 'redis.clients', 'com.example.smt.shadow.redis.clients'
-    relocate 'software.amazon.awssdk', 'com.example.smt.shadow.awssdk'
+    relocate 'redis.clients', 'com.github.cokelee777.shadow.redis.clients'
+    relocate 'software.amazon.awssdk', 'com.github.cokelee777.shadow.awssdk'
+
+    mergeServiceFiles()
 }

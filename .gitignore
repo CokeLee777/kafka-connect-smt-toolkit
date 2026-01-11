@@ -37,3 +37,10 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+.env
+connect-configs
+connect-plugins
+docker-compose.yml
+mysql-init
+restart-connect.sh

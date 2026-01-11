@@ -1,2 +1,2 @@
-# kafka-large-payload-processor
-Kafka Large Payload Processor
+# kafka-large-payload-SMT
+Kafka Large Payload SMT
