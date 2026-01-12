@@ -108,7 +108,7 @@ To use the ClaimCheck SMT, you'll need to configure it in your Kafka Connect con
 *   `threshold.bytes`: (Optional) Messages larger than this size (in bytes) will be offloaded to external storage. Defaults to 1MB (1048576 bytes).
 *   `storage.type`: The type of storage backend to use (e.g., `S3`).
 *   `s3.bucket.name`: (Required for S3) The name of the S3 bucket to store the offloaded messages.
-*   `s3.region`: (Required for S3) The AWS region of the S3 bucket.
+*   `s3.region`: (Optional for S3) The AWS region of the S3 bucket. Defaults to ap-northeast-2.
 
 #### Usage
 
