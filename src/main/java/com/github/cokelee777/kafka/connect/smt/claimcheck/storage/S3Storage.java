@@ -16,7 +16,7 @@ public class S3Storage implements ClaimCheckStorage {
   public static final String CONFIG_BUCKET_NAME = "storage.s3.bucket.name";
   public static final String CONFIG_REGION = "storage.s3.region";
   public static final String CONFIG_ENDPOINT_OVERRIDE = "storage.s3.endpoint.override";
-  public static final ConfigDef CONFIG_DEF =
+  public static final ConfigDef CONFIG_DEF = 
       new ConfigDef()
           .define(
               CONFIG_BUCKET_NAME,
@@ -34,7 +34,11 @@ public class S3Storage implements ClaimCheckStorage {
               ConfigDef.Type.STRING,
               null,
               ConfigDef.Importance.LOW,
-              "S3 Endpoint Override");
+              "S3 Endpoint Override. For testing purposes only (e.g., with LocalStack).",
+              "Testing",
+              1,
+              ConfigDef.Width.MEDIUM,
+              "S3 Endpoint Override (For Testing)");
 
   private String bucketName;
   private String region;
@@ -64,24 +68,43 @@ public class S3Storage implements ClaimCheckStorage {
   public void configure(Map<String, ?> configs) {
     SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
 
-    this.bucketName = config.getString(CONFIG_BUCKET_NAME);
-    this.region = config.getString(CONFIG_REGION);
-    this.endpointOverride = config.getString(CONFIG_ENDPOINT_OVERRIDE);
+    this.bucketName = getRequiredString(config, CONFIG_BUCKET_NAME);
+    this.region = getOptionalString(config, CONFIG_REGION);
+    this.endpointOverride = getOptionalString(config, CONFIG_ENDPOINT_OVERRIDE);
 
-    S3ClientBuilder builder =
+    S3ClientBuilder builder = 
         S3Client.builder().credentialsProvider(DefaultCredentialsProvider.builder().build());
 
-    if (this.region != null && !region.isBlank()) {
-      builder.region(Region.of(this.region));
-    }
+    builder.region(Region.of(this.region));
 
-    if (this.endpointOverride != null && !this.endpointOverride.isBlank()) {
+    if (this.endpointOverride != null) {
       builder.endpointOverride(URI.create(this.endpointOverride));
       // http://bucketName.localhost:4566 -> http://localhost:4566/bucketName
       builder.forcePathStyle(true);
     }
 
     this.s3Client = builder.build();
+  }
+
+  private String getRequiredString(SimpleConfig config, String key) {
+    String value = config.getString(key);
+    if (value == null || value.isBlank()) {
+      throw new org.apache.kafka.common.config.ConfigException(
+          "Configuration \"" + key + "\" must not be empty or blank.");
+    }
+    return value.trim();
+  }
+
+  private String getOptionalString(SimpleConfig config, String key) {
+    String value = config.getString(key);
+    if(value != null) {
+      if(value.isBlank()) {
+        throw new org.apache.kafka.common.config.ConfigException(
+                "Configuration \"" + key + "\" must not be empty or blank if provided.");
+      }
+      return value.trim();
+    }
+    return null;
   }
 
   @Override
