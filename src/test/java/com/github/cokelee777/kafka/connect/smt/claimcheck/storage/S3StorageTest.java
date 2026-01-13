@@ -27,13 +27,11 @@ class S3StorageTest {
   private static final String EXPECTED_EMPTY_BUCKET_ERROR_MESSAGE =
       "Configuration \"storage.s3.bucket.name\" must not be empty or blank.";
   private static final String EXPECTED_EMPTY_REGION_ERROR_MESSAGE =
-          "Configuration \"storage.s3.region\" must not be empty or blank if provided.";
+      "Configuration \"storage.s3.region\" must not be empty or blank if provided.";
   private static final String EXPECTED_EMPTY_ENDPOINT_OVERRIDE_ERROR_MESSAGE =
-          "Configuration \"storage.s3.endpoint.override\" must not be empty or blank if provided.";
-  
+      "Configuration \"storage.s3.endpoint.override\" must not be empty or blank if provided.";
 
-  @Mock
-  private S3Client s3Client;
+  @Mock private S3Client s3Client;
 
   private S3Storage storage;
 
@@ -215,7 +213,7 @@ class S3StorageTest {
 
       // When & Then
       ConfigException exception =
-              assertThrows(ConfigException.class, () -> storage.configure(configs));
+          assertThrows(ConfigException.class, () -> storage.configure(configs));
       assertEquals(EXPECTED_EMPTY_REGION_ERROR_MESSAGE, exception.getMessage());
     }
 
@@ -227,7 +225,7 @@ class S3StorageTest {
 
       // When & Then
       ConfigException exception =
-              assertThrows(ConfigException.class, () -> storage.configure(configs));
+          assertThrows(ConfigException.class, () -> storage.configure(configs));
       assertEquals(EXPECTED_EMPTY_REGION_ERROR_MESSAGE, exception.getMessage());
     }
   }

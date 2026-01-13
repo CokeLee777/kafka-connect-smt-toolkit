@@ -16,7 +16,7 @@ public class S3Storage implements ClaimCheckStorage {
   public static final String CONFIG_BUCKET_NAME = "storage.s3.bucket.name";
   public static final String CONFIG_REGION = "storage.s3.region";
   public static final String CONFIG_ENDPOINT_OVERRIDE = "storage.s3.endpoint.override";
-  public static final ConfigDef CONFIG_DEF = 
+  public static final ConfigDef CONFIG_DEF =
       new ConfigDef()
           .define(
               CONFIG_BUCKET_NAME,
@@ -72,7 +72,7 @@ public class S3Storage implements ClaimCheckStorage {
     this.region = getOptionalString(config, CONFIG_REGION);
     this.endpointOverride = getOptionalString(config, CONFIG_ENDPOINT_OVERRIDE);
 
-    S3ClientBuilder builder = 
+    S3ClientBuilder builder =
         S3Client.builder().credentialsProvider(DefaultCredentialsProvider.builder().build());
 
     builder.region(Region.of(this.region));
@@ -97,10 +97,10 @@ public class S3Storage implements ClaimCheckStorage {
 
   private String getOptionalString(SimpleConfig config, String key) {
     String value = config.getString(key);
-    if(value != null) {
-      if(value.isBlank()) {
+    if (value != null) {
+      if (value.isBlank()) {
         throw new org.apache.kafka.common.config.ConfigException(
-                "Configuration \"" + key + "\" must not be empty or blank if provided.");
+            "Configuration \"" + key + "\" must not be empty or blank if provided.");
       }
       return value.trim();
     }
