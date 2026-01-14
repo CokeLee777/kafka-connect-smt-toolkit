@@ -22,8 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("ClaimCheckSourceTransform 단위 테스트")
-public class ClaimCheckSourceTransformTest {
+@DisplayName("S3ClaimCheckSourceTransform 단위 테스트")
+public class S3ClaimCheckSourceTransformTest {
 
   private ClaimCheckSourceTransform transform;
 
@@ -35,7 +35,6 @@ public class ClaimCheckSourceTransformTest {
 
   @BeforeEach
   void setUp() {
-    // initStorage를 오버라이드하여 mockStorage를 주입
     transform =
         new ClaimCheckSourceTransform() {
           @Override
