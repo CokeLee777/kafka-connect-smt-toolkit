@@ -121,7 +121,6 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     }
 
     String referenceUrl = storage.store(valueBytes);
-
     Struct referenceStruct =
         new Struct(REFERENCE_SCHEMA)
             .put("reference_url", referenceUrl)
