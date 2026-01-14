@@ -38,7 +38,7 @@ class S3StorageTest {
   private static final String EXPECTED_EMPTY_BUCKET_ERROR_MESSAGE =
       "Configuration \"storage.s3.bucket.name\" must not be empty or blank.";
   private static final String EXPECTED_EMPTY_REGION_ERROR_MESSAGE =
-      "Configuration \"storage.s3.region\" must not be empty or blank if provided.";
+      "region must not be blank or empty.";
   private static final String EXPECTED_EMPTY_ENDPOINT_OVERRIDE_ERROR_MESSAGE =
       "Configuration \"storage.s3.endpoint.override\" must not be empty or blank if provided.";
 
@@ -179,14 +179,14 @@ class S3StorageTest {
       }
 
       @Test
-      @DisplayName("빈 문자열 리전이면 ConfigException이 발생한다")
+      @DisplayName("빈 문자열 리전이면 IllegalArgumentException이 발생한다")
       void configureWithEmptyRegion() {
         // Given
         Map<String, String> configs = createConfigWithBucketAndRegion(TEST_BUCKET_NAME, "");
 
         // When
-        ConfigException exception =
-            assertThrows(ConfigException.class, () -> storage.configure(configs));
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> storage.configure(configs));
 
         // Then
         assertEquals(EXPECTED_EMPTY_REGION_ERROR_MESSAGE, exception.getMessage());

@@ -6,6 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.cokelee777.kafka.connect.smt.utils.ConfigUtils;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigException;
@@ -73,7 +75,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     TransformConfig config = new TransformConfig(configs);
 
     this.thresholdBytes = config.getInt(CONFIG_THRESHOLD_BYTES);
-    String storageType = config.getString(CONFIG_STORAGE_TYPE);
+    String storageType = ConfigUtils.getRequiredString(config, CONFIG_STORAGE_TYPE);
 
     this.storage = initStorage(storageType);
     this.storage.configure(configs);

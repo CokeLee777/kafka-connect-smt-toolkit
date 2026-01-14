@@ -84,8 +84,8 @@ public class S3Storage implements ClaimCheckStorage {
     SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
 
     this.bucketName = ConfigUtils.getRequiredString(config, CONFIG_BUCKET_NAME);
-    this.region = ConfigUtils.getOptionalString(config, CONFIG_REGION);
-    this.pathPrefix = ConfigUtils.getOptionalString(config, CONFIG_S3_PATH_PREFIX);
+    this.region = config.getString(CONFIG_REGION);
+    this.pathPrefix = config.getString(CONFIG_S3_PATH_PREFIX);
     this.endpointOverride = ConfigUtils.getOptionalString(config, CONFIG_ENDPOINT_OVERRIDE);
 
     S3ClientBuilder builder =
