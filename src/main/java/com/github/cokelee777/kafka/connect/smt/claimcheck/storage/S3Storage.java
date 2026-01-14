@@ -2,6 +2,8 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage;
 
 import java.net.URI;
 import java.util.Map;
+
+import com.github.cokelee777.kafka.connect.smt.utils.ConfigUtils;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -68,9 +70,9 @@ public class S3Storage implements ClaimCheckStorage {
   public void configure(Map<String, ?> configs) {
     SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
 
-    this.bucketName = getRequiredString(config, CONFIG_BUCKET_NAME);
-    this.region = getOptionalString(config, CONFIG_REGION);
-    this.endpointOverride = getOptionalString(config, CONFIG_ENDPOINT_OVERRIDE);
+    this.bucketName = ConfigUtils.getRequiredString(config, CONFIG_BUCKET_NAME);
+    this.region = ConfigUtils.getOptionalString(config, CONFIG_REGION);
+    this.endpointOverride = ConfigUtils.getOptionalString(config, CONFIG_ENDPOINT_OVERRIDE);
 
     S3ClientBuilder builder =
         S3Client.builder().credentialsProvider(DefaultCredentialsProvider.builder().build());
@@ -84,27 +86,6 @@ public class S3Storage implements ClaimCheckStorage {
     }
 
     this.s3Client = builder.build();
-  }
-
-  private String getRequiredString(SimpleConfig config, String key) {
-    String value = config.getString(key);
-    if (value == null || value.isBlank()) {
-      throw new org.apache.kafka.common.config.ConfigException(
-          "Configuration \"" + key + "\" must not be empty or blank.");
-    }
-    return value.trim();
-  }
-
-  private String getOptionalString(SimpleConfig config, String key) {
-    String value = config.getString(key);
-    if (value != null) {
-      if (value.isBlank()) {
-        throw new org.apache.kafka.common.config.ConfigException(
-            "Configuration \"" + key + "\" must not be empty or blank if provided.");
-      }
-      return value.trim();
-    }
-    return null;
   }
 
   @Override
