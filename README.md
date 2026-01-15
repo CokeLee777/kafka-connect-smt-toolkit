@@ -11,7 +11,6 @@ This repository hosts an open-source toolkit for Kafka Connect Single Message Tr
 
 ### Runtime Dependencies
 - **AWS SDK for Java 2.41.3** - Amazon S3 client for cloud storage integration
-- **Jedis 7.2.0** - Redis client for distributed caching (future features)
 - **SLF4J 2.0.17** - Logging facade (provided by Kafka Connect runtime)
 
 ### Testing Framework
