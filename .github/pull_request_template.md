@@ -2,7 +2,7 @@
 
 Please include a summary of the change and which issue is fixed.
 
-* closes #ISSUE_NUMBER
+* closed #ISSUE_NUMBER
 * refs #ISSUE_NUMBER
 
 ## 🔍 Type of change
