@@ -107,22 +107,53 @@ public class S3Storage implements ClaimCheckStorage {
     return pathPrefix;
   }
 
+  /**
+   * Retrieve the configured S3 endpoint override.
+   *
+   * @return the endpoint override URL as a string, or {@code null} if none is configured
+   */
   public String getEndpointOverride() {
     return endpointOverride;
   }
 
+  /**
+   * Maximum number of retry attempts used when uploading objects to S3.
+   *
+   * @return the maximum number of retry attempts.
+   */
   public int getRetryMax() {
     return retryMax;
   }
 
+  /**
+   * Initial backoff delay applied between retry attempts.
+   *
+   * @return the initial backoff delay in milliseconds used for retrying S3 requests
+   */
   public long getRetryBackoffMs() {
     return retryBackoffMs;
   }
 
+  /**
+   * Maximum backoff delay in milliseconds used between retry attempts.
+   *
+   * @return the maximum backoff delay in milliseconds for retry attempts
+   */
   public long getRetryMaxBackoffMs() {
     return retryMaxBackoffMs;
   }
 
+  /**
+   * Loads configuration values into this storage instance and initializes the S3 client if it
+   * has not been provided.
+   *
+   * Reads required and optional settings (bucket name, region, path prefix, endpoint override,
+   * and retry parameters) from the supplied config map and assigns them to the instance fields.
+   * If no S3 client was injected, constructs one using the configured region, optional endpoint
+   * override (enabling path-style access when present), and the storage's retry strategy.
+   *
+   * @param configs a map of configuration properties keyed by configuration names
+   */
   @Override
   public void configure(Map<String, ?> configs) {
     SimpleConfig config = new SimpleConfig(CONFIG_DEF, configs);
@@ -156,6 +187,15 @@ public class S3Storage implements ClaimCheckStorage {
     }
   }
 
+  /**
+   * Create a StandardRetryStrategy based on the instance's retry settings.
+   *
+   * The strategy uses an exponential backoff with an initial delay of {@code retryBackoffMs}
+   * and a maximum delay of {@code retryMaxBackoffMs}, sets throttling backoff to the same
+   * strategy, configures max attempts to {@code retryMax + 1}, and disables the circuit breaker.
+   *
+   * @return a configured {@link StandardRetryStrategy}
+   */
   private StandardRetryStrategy initRetryStrategy() {
     BackoffStrategy backoffStrategy =
         BackoffStrategy.exponentialDelay(
@@ -169,6 +209,14 @@ public class S3Storage implements ClaimCheckStorage {
         .build();
   }
 
+  /**
+   * Stores the given bytes as a new object in the configured S3 bucket and returns its S3 URI.
+   *
+   * @param data the object payload to upload
+   * @return the S3 URI of the stored object, for example "s3://bucketName/pathPrefix/uuid"
+   * @throws IllegalStateException if the S3 client has not been initialized via {@code configure()}
+   * @throws RuntimeException if the upload fails
+   */
   @Override
   public String store(byte[] data) {
     if (this.s3Client == null) {
