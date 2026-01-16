@@ -30,36 +30,3 @@ jobs:
           if [ -f build.gradle ] || [ -f build.gradle.kts ]; then
             ./gradlew build || gradle build
           fi
-
-  code-review:
-    name: CodeRabbit Code Review
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: CodeRabbit Review
-        uses: coderabbitai/openai-pr-reviewer@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        with:
-          review_comment_lgtm: true
-          path_filters: |
-            **/*.java
-            **/*.kt
-            **/*.groovy
-            **/*.gradle
-            **/*.gradle.kts
-            **/*.xml
-            **/*.properties
-            **/*.yml
-            **/*.yaml
-            **/*.json
-          language: java
