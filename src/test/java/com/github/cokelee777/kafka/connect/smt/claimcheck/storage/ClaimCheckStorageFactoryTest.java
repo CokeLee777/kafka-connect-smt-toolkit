@@ -2,6 +2,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
 import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

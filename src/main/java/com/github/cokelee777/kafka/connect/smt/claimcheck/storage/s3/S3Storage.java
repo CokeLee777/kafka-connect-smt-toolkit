@@ -82,7 +82,7 @@ public class S3Storage implements ClaimCheckStorage {
               "Maximum backoff time in milliseconds for S3 upload retries.");
 
   private RetryStrategyFactory<StandardRetryStrategy> retryStrategyFactory =
-          new S3RetryConfigAdapter();
+      new S3RetryConfigAdapter();
 
   private String bucketName;
   private String region;
@@ -96,7 +96,8 @@ public class S3Storage implements ClaimCheckStorage {
 
   public S3Storage() {}
 
-  public S3Storage(S3Client s3Client, RetryStrategyFactory<StandardRetryStrategy> retryStrategyFactory) {
+  public S3Storage(
+      S3Client s3Client, RetryStrategyFactory<StandardRetryStrategy> retryStrategyFactory) {
     this.s3Client = s3Client;
     this.retryStrategyFactory = retryStrategyFactory;
   }
@@ -152,7 +153,9 @@ public class S3Storage implements ClaimCheckStorage {
 
     RetryConfig retryConfig =
         new RetryConfig(
-            retryMax + 1, Duration.ofMillis(this.retryBackoffMs), Duration.ofMillis(this.retryMaxBackoffMs));
+            retryMax + 1,
+            Duration.ofMillis(this.retryBackoffMs),
+            Duration.ofMillis(this.retryMaxBackoffMs));
     StandardRetryStrategy retryStrategy = this.retryStrategyFactory.create(retryConfig);
 
     S3ClientBuilder builder =

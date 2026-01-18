@@ -8,7 +8,7 @@ import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchemaFields;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageFactory;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.S3Storage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -238,12 +238,12 @@ public class S3ClaimCheckSourceTransformTest {
         assertNotSame(originalRecord, transformedRecord);
         assertEquals(ClaimCheckSchema.SCHEMA, transformedRecord.valueSchema());
 
-        Struct responseStruct = (Struct) transformedRecord.value();
+        Struct transformedStruct = (Struct) transformedRecord.value();
         assertEquals(
-            TEST_REFERENCE_URL, responseStruct.getString(ClaimCheckSchemaFields.REFERENCE_URL));
+            TEST_REFERENCE_URL, transformedStruct.getString(ClaimCheckSchemaFields.REFERENCE_URL));
         assertEquals(
-            originalSizeBytes, responseStruct.getInt64(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES));
-        assertNotNull(responseStruct.getInt64(ClaimCheckSchemaFields.UPLOADED_AT));
+            originalSizeBytes, transformedStruct.getInt64(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES));
+        assertNotNull(transformedStruct.getInt64(ClaimCheckSchemaFields.UPLOADED_AT));
       }
     }
 
