@@ -234,7 +234,7 @@ public class S3ClaimCheckSourceTransformTest {
       }
 
       private void assertClaimChecked(
-          SourceRecord originalRecord, SourceRecord transformedRecord, int originalSizeBytes) {
+          SourceRecord originalRecord, SourceRecord transformedRecord, long originalSizeBytes) {
         assertNotSame(originalRecord, transformedRecord);
         assertEquals(ClaimCheckSchema.SCHEMA, transformedRecord.valueSchema());
 
