@@ -13,11 +13,12 @@ import org.apache.kafka.common.config.ConfigException;
  */
 public class ClaimCheckStorageFactory {
 
-  private static final Map<String, ClaimCheckStorage> STORAGE_MAP = new HashMap<>();
+  private static final Map<String, Class<? extends ClaimCheckStorage>> STORAGE_MAP =
+      new HashMap<>();
 
   static {
     ServiceLoader.load(ClaimCheckStorage.class)
-        .forEach(storage -> STORAGE_MAP.put(storage.type().toLowerCase(), storage));
+        .forEach(storage -> STORAGE_MAP.put(storage.type().toLowerCase(), storage.getClass()));
   }
 
   /**
@@ -28,10 +29,15 @@ public class ClaimCheckStorageFactory {
    * @throws ConfigException if the requested storage type is not found.
    */
   public static ClaimCheckStorage create(String type) {
-    ClaimCheckStorage storage = STORAGE_MAP.get(type.toLowerCase());
-    if (storage == null) {
+    Class<? extends ClaimCheckStorage> storageClass = STORAGE_MAP.get(type.toLowerCase());
+    if (storageClass == null) {
       throw new ConfigException("Unsupported storage type: " + type);
     }
-    return storage;
+
+    try {
+      return storageClass.getDeclaredConstructor().newInstance();
+    } catch (ReflectiveOperationException e) {
+      throw new ConfigException("Failed to instantiate storage type: " + type, e);
+    }
   }
 }
