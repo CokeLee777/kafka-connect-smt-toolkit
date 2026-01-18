@@ -30,6 +30,12 @@ public class ClaimCheckReference {
    * @return A new {@link ClaimCheckReference} instance.
    */
   public static ClaimCheckReference create(String referenceUrl, long originalSizeBytes) {
+    if(referenceUrl == null || referenceUrl.isBlank()) {
+      throw new IllegalArgumentException("referenceUrl must be non-blank");
+    }
+    if(originalSizeBytes < 0) {
+      throw new IllegalArgumentException("originalSizeBytes must be >= 0");
+    }
     return new ClaimCheckReference(referenceUrl, originalSizeBytes, Instant.now().toEpochMilli());
   }
 
