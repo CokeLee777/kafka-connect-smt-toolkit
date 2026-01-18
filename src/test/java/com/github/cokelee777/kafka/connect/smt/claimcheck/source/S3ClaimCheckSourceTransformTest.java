@@ -32,10 +32,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayName("S3ClaimCheckSourceTransform 단위 테스트")
 public class S3ClaimCheckSourceTransformTest {
 
-  private static final String TEST_STORAGE_TYPE = "s3";
-  private static final String TEST_UNSUPPORTED_STORAGE_TYPE = "UnsupportedStorage";
-  private static final String TEST_BUCKET_NAME = "test-bucket";
-  private static final String TEST_THRESHOLD_BYTES = "10";
+  private static final String TEST_CONFIG_STORAGE_TYPE = "s3";
+  private static final String TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE = "UnsupportedStorage";
+  private static final String TEST_CONFIG_THRESHOLD_BYTES = "10";
+  private static final String TEST_CONFIG_BUCKET_NAME = "test-bucket";
   private static final String TEST_TOPIC = "test-topic";
   private static final String TEST_LARGE_PAYLOAD = "this is large payload !!!";
   private static final String TEST_SMALL_PAYLOAD = "small";
@@ -71,7 +71,9 @@ public class S3ClaimCheckSourceTransformTest {
 
       @BeforeEach
       void configureSetUp() {
-        factory.when(() -> ClaimCheckStorageFactory.create(TEST_STORAGE_TYPE)).thenReturn(storage);
+        factory
+            .when(() -> ClaimCheckStorageFactory.create(TEST_CONFIG_STORAGE_TYPE))
+            .thenReturn(storage);
       }
 
       @Test
@@ -80,8 +82,8 @@ public class S3ClaimCheckSourceTransformTest {
         // Given
         Map<String, String> configs =
             Map.of(
-                ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_STORAGE_TYPE,
-                S3Storage.CONFIG_BUCKET_NAME, TEST_BUCKET_NAME);
+                ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_CONFIG_STORAGE_TYPE,
+                S3Storage.CONFIG_BUCKET_NAME, TEST_CONFIG_BUCKET_NAME);
 
         // When
         transform.configure(configs);
@@ -96,9 +98,9 @@ public class S3ClaimCheckSourceTransformTest {
         // Given
         Map<String, String> configs =
             Map.of(
-                ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_STORAGE_TYPE,
-                ClaimCheckSourceTransform.CONFIG_THRESHOLD_BYTES, TEST_THRESHOLD_BYTES,
-                S3Storage.CONFIG_BUCKET_NAME, TEST_BUCKET_NAME);
+                ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_CONFIG_STORAGE_TYPE,
+                ClaimCheckSourceTransform.CONFIG_THRESHOLD_BYTES, TEST_CONFIG_THRESHOLD_BYTES,
+                S3Storage.CONFIG_BUCKET_NAME, TEST_CONFIG_BUCKET_NAME);
 
         // When
         transform.configure(configs);
@@ -117,12 +119,15 @@ public class S3ClaimCheckSourceTransformTest {
       void shouldPropagateExceptionFromFactory() {
         // given
         factory
-            .when(() -> ClaimCheckStorageFactory.create(TEST_UNSUPPORTED_STORAGE_TYPE))
+            .when(() -> ClaimCheckStorageFactory.create(TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE))
             .thenThrow(
-                new ConfigException("Unsupported storage type: " + TEST_UNSUPPORTED_STORAGE_TYPE));
+                new ConfigException(
+                    "Unsupported storage type: " + TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE));
 
         Map<String, String> configs =
-            Map.of(ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_UNSUPPORTED_STORAGE_TYPE);
+            Map.of(
+                ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE,
+                TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE);
 
         // when & then
         assertThrows(ConfigException.class, () -> transform.configure(configs));
@@ -139,12 +144,14 @@ public class S3ClaimCheckSourceTransformTest {
     @BeforeEach
     void applySetUp() {
       factory = mockStatic(ClaimCheckStorageFactory.class);
-      factory.when(() -> ClaimCheckStorageFactory.create(TEST_STORAGE_TYPE)).thenReturn(storage);
+      factory
+          .when(() -> ClaimCheckStorageFactory.create(TEST_CONFIG_STORAGE_TYPE))
+          .thenReturn(storage);
 
       Map<String, String> configs = new HashMap<>();
-      configs.put(ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_STORAGE_TYPE);
-      configs.put(S3Storage.CONFIG_BUCKET_NAME, TEST_BUCKET_NAME);
-      configs.put(ClaimCheckSourceTransform.CONFIG_THRESHOLD_BYTES, TEST_THRESHOLD_BYTES);
+      configs.put(ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_CONFIG_STORAGE_TYPE);
+      configs.put(S3Storage.CONFIG_BUCKET_NAME, TEST_CONFIG_BUCKET_NAME);
+      configs.put(ClaimCheckSourceTransform.CONFIG_THRESHOLD_BYTES, TEST_CONFIG_THRESHOLD_BYTES);
       transform.configure(configs);
     }
 
@@ -309,7 +316,9 @@ public class S3ClaimCheckSourceTransformTest {
     @BeforeEach
     void closeSetUp() {
       factory = mockStatic(ClaimCheckStorageFactory.class);
-      factory.when(() -> ClaimCheckStorageFactory.create(TEST_STORAGE_TYPE)).thenReturn(storage);
+      factory
+          .when(() -> ClaimCheckStorageFactory.create(TEST_CONFIG_STORAGE_TYPE))
+          .thenReturn(storage);
     }
 
     @AfterEach
@@ -322,9 +331,9 @@ public class S3ClaimCheckSourceTransformTest {
     void shouldCallStorageClose() {
       // Given
       Map<String, String> configs = new HashMap<>();
-      configs.put(ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_STORAGE_TYPE);
-      configs.put(S3Storage.CONFIG_BUCKET_NAME, TEST_BUCKET_NAME);
-      configs.put(ClaimCheckSourceTransform.CONFIG_THRESHOLD_BYTES, TEST_THRESHOLD_BYTES);
+      configs.put(ClaimCheckSourceTransform.CONFIG_STORAGE_TYPE, TEST_CONFIG_STORAGE_TYPE);
+      configs.put(S3Storage.CONFIG_BUCKET_NAME, TEST_CONFIG_BUCKET_NAME);
+      configs.put(ClaimCheckSourceTransform.CONFIG_THRESHOLD_BYTES, TEST_CONFIG_THRESHOLD_BYTES);
       transform.configure(configs);
 
       // When

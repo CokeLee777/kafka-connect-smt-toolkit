@@ -9,19 +9,19 @@ import org.junit.jupiter.api.Test;
 @DisplayName("ClaimCheckStorageFactory 단위 테스트")
 public class ClaimCheckStorageFactoryTest {
 
-  private static final String TEST_STORAGE_TYPE = "s3";
-  private static final String TEST_UNSUPPORTED_STORAGE_TYPE = "UnsupportedStorage";
+  private static final String TEST_CONFIG_STORAGE_TYPE = "s3";
+  private static final String TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE = "UnsupportedStorage";
 
   @Test
   @DisplayName("s3 타입이면 S3Storage를 생성한다")
   void shouldCreateS3Storage() {
     // when
-    ClaimCheckStorage storage = ClaimCheckStorageFactory.create(TEST_STORAGE_TYPE);
+    ClaimCheckStorage storage = ClaimCheckStorageFactory.create(TEST_CONFIG_STORAGE_TYPE);
 
     // then
     assertNotNull(storage);
     assertTrue(storage instanceof S3Storage);
-    assertEquals(TEST_STORAGE_TYPE, storage.type());
+    assertEquals(TEST_CONFIG_STORAGE_TYPE, storage.type());
   }
 
   @Test
@@ -31,9 +31,10 @@ public class ClaimCheckStorageFactoryTest {
     ConfigException exception =
         assertThrows(
             ConfigException.class,
-            () -> ClaimCheckStorageFactory.create(TEST_UNSUPPORTED_STORAGE_TYPE));
+            () -> ClaimCheckStorageFactory.create(TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE));
 
     assertEquals(
-        "Unsupported storage type: " + TEST_UNSUPPORTED_STORAGE_TYPE, exception.getMessage());
+        "Unsupported storage type: " + TEST_CONFIG_UNSUPPORTED_STORAGE_TYPE,
+        exception.getMessage());
   }
 }
