@@ -19,20 +19,4 @@ public enum StorageType {
   public String type() {
     return type;
   }
-
-  /**
-   * Finds a {@link StorageType} enum constant from a string identifier.
-   *
-   * @param value The string to match (case-insensitive).
-   * @return The corresponding {@link StorageType}.
-   * @throws IllegalArgumentException if no matching storage type is found.
-   */
-  public static StorageType from(String value) {
-    for (StorageType storageType : values()) {
-      if (storageType.type.equalsIgnoreCase(value)) {
-        return storageType;
-      }
-    }
-    throw new IllegalArgumentException("Unknown storage type: " + value);
-  }
 }
