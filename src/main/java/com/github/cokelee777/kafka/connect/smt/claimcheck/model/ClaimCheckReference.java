@@ -1,8 +1,7 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.model;
 
-import org.apache.kafka.connect.data.Struct;
-
 import java.time.Instant;
+import org.apache.kafka.connect.data.Struct;
 
 /**
  * Represents a "claim check" reference to a payload stored in an external system.
@@ -30,6 +29,12 @@ public class ClaimCheckReference {
    * @return A new {@link ClaimCheckReference} instance.
    */
   public static ClaimCheckReference create(String referenceUrl, long originalSizeBytes) {
+    if (referenceUrl == null || referenceUrl.isBlank()) {
+      throw new IllegalArgumentException("referenceUrl must be non-blank");
+    }
+    if (originalSizeBytes < 0) {
+      throw new IllegalArgumentException("originalSizeBytes must be >= 0");
+    }
     return new ClaimCheckReference(referenceUrl, originalSizeBytes, Instant.now().toEpochMilli());
   }
 
