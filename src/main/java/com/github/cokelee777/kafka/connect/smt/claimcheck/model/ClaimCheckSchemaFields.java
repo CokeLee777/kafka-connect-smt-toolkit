@@ -12,9 +12,6 @@ public final class ClaimCheckSchemaFields {
   /** The field name for the URL pointing to the externally stored payload. */
   public static final String REFERENCE_URL = "reference_url";
 
-  /** The field name for the type of the original value. */
-  public static final String ORIGINAL_VALUE_TYPE = "original_value_type";
-
   /** The field name for the original size of the payload in bytes. */
   public static final String ORIGINAL_SIZE_BYTES = "original_size_bytes";
 

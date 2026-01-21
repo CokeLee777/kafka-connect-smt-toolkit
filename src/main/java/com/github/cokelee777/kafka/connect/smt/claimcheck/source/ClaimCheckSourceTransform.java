@@ -4,7 +4,6 @@ import com.github.cokelee777.kafka.connect.smt.claimcheck.internal.RecordSeriali
 import com.github.cokelee777.kafka.connect.smt.claimcheck.internal.RecordSerializerFactory;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckReference;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.model.RecordValueType;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageFactory;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.StorageType;
@@ -127,10 +126,8 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
 
   private SourceRecord createClaimCheckRecord(SourceRecord record, byte[] serializedRecord) {
     String referenceUrl = this.storage.store(serializedRecord);
-    RecordValueType recordValueType = RecordValueType.from(record);
     Struct referenceValue =
-        ClaimCheckReference.create(referenceUrl, recordValueType, serializedRecord.length)
-            .toStruct();
+        ClaimCheckReference.create(referenceUrl, serializedRecord.length).toStruct();
 
     return record.newRecord(
         record.topic(),
