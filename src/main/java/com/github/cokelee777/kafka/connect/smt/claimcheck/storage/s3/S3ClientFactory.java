@@ -13,12 +13,6 @@ import software.amazon.awssdk.retries.StandardRetryStrategy;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
-/**
- * Factory for creating {@link S3Client} instances.
- *
- * <p>This class encapsulates the logic for building an S3 client based on the provided connector
- * configuration, including authentication, region, endpoint overrides, and retry strategies.
- */
 public class S3ClientFactory {
 
   private final SimpleConfig config;

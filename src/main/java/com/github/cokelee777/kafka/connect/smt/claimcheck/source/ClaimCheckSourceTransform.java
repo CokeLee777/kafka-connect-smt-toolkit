@@ -14,16 +14,6 @@ import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.Transformation;
 
-/**
- * A Kafka Connect Single Message Transform (SMT) for implementing the Claim Check pattern.
- *
- * <p>This transform intercepts outgoing source records. If a record's value payload exceeds a
- * configured size threshold, it is stored in an external storage system (e.g., S3), and the
- * original payload is replaced with a "claim check" reference to that stored data.
- *
- * <p>Records with payloads smaller than the threshold are passed through unmodified. This is
- * intended for use with source connectors.
- */
 public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
 
   public static final class Config {

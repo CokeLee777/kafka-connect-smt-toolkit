@@ -12,13 +12,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-/**
- * A {@link ClaimCheckStorage} implementation that stores message payloads in Amazon S3.
- *
- * <p>This class handles the configuration of the S3 client and the process of uploading data to a
- * specified S3 bucket. It supports custom endpoint configurations for testing purposes (e.g., with
- * LocalStack) and includes a configurable retry mechanism for uploads.
- */
 public class S3Storage implements ClaimCheckStorage {
 
   public static final class Config {
@@ -128,16 +121,6 @@ public class S3Storage implements ClaimCheckStorage {
     }
   }
 
-  /**
-   * Uploads the given payload to the configured S3 bucket.
-   *
-   * <p>A unique key is generated for the object, and it is stored under the configured path prefix.
-   *
-   * @param payload The byte array payload to be stored.
-   * @return The S3 URI of the stored object (e.g., "s3://bucket-name/path-prefix/uuid").
-   * @throws IllegalStateException if the S3 client is not initialized.
-   * @throws RuntimeException if the upload to S3 fails.
-   */
   @Override
   public String store(byte[] payload) {
     if (this.s3Client == null) {
@@ -157,7 +140,6 @@ public class S3Storage implements ClaimCheckStorage {
     }
   }
 
-  /** Closes the underlying S3 client, releasing any resources. */
   @Override
   public void close() {
     if (this.s3Client != null) {
