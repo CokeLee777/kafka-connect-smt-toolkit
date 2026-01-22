@@ -9,6 +9,14 @@ public class ClaimCheckReference {
   private final long originalSizeBytes;
   private final long uploadedAt;
 
+  public String getReferenceUrl() {
+    return referenceUrl;
+  }
+
+  public long getOriginalSizeBytes() {
+    return originalSizeBytes;
+  }
+
   private ClaimCheckReference(String referenceUrl, long originalSizeBytes, long uploadedAt) {
     this.referenceUrl = referenceUrl;
     this.originalSizeBytes = originalSizeBytes;

@@ -4,5 +4,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 
 public interface RecordSerializer {
 
+  String type();
+
   byte[] serialize(SourceRecord record);
 }

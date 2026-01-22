@@ -39,6 +39,11 @@ public class JsonRecordSerializer implements RecordSerializer {
   }
 
   @Override
+  public String type() {
+    return RecordSerializerType.JSON.type();
+  }
+
+  @Override
   public byte[] serialize(SourceRecord record) {
     if (record.value() == null) {
       return null;

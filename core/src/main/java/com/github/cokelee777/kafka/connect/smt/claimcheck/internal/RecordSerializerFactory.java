@@ -8,11 +8,11 @@ import org.apache.kafka.common.config.ConfigException;
 
 public class RecordSerializerFactory {
 
-  private static final String DEFAULT_SERIALIZER_TYPE = "json";
+  private static final String DEFAULT_SERIALIZER_TYPE = RecordSerializerType.JSON.type();
   private static final Map<String, Supplier<RecordSerializer>> SERIALIZER_MAP = new HashMap<>();
 
   static {
-    register(DEFAULT_SERIALIZER_TYPE, JsonRecordSerializer::create);
+    register(RecordSerializerType.JSON.type(), JsonRecordSerializer::create);
   }
 
   private static void register(String type, Supplier<RecordSerializer> supplier) {
