@@ -24,11 +24,11 @@ public class S3Storage implements ClaimCheckStorage {
     public static final String RETRY_BACKOFF_MS = "storage.s3.retry.backoff.ms";
     public static final String RETRY_MAX_BACKOFF_MS = "storage.s3.retry.max.backoff.ms";
 
-    private static final String DEFAULT_REGION = Region.AP_NORTHEAST_2.id();
-    private static final String DEFAULT_PATH_PREFIX = "claim-checks";
-    private static final int DEFAULT_RETRY_MAX = 3;
-    private static final long DEFAULT_RETRY_BACKOFF_MS = 300L;
-    private static final long DEFAULT_MAX_BACKOFF_MS = 20_000L;
+    public static final String DEFAULT_REGION = Region.AP_NORTHEAST_2.id();
+    public static final String DEFAULT_PATH_PREFIX = "claim-checks";
+    public static final int DEFAULT_RETRY_MAX = 3;
+    public static final long DEFAULT_RETRY_BACKOFF_MS = 300L;
+    public static final long DEFAULT_MAX_BACKOFF_MS = 20_000L;
 
     public static final ConfigDef DEFINITION =
         new ConfigDef()
