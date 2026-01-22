@@ -20,7 +20,7 @@ public class ClaimCheckStorageFactoryTest {
   class CreateTest {
 
     @Test
-    @DisplayName("올바른 Type을 인자로 넘겨주면 S3Storage 객체를 생성한다.")
+    @DisplayName("올바른 Type을 인자로 넘겨주면 ClaimCheckStorage 객체를 생성한다.")
     public void rightType() {
       // Given
       String type = StorageType.S3.type();
