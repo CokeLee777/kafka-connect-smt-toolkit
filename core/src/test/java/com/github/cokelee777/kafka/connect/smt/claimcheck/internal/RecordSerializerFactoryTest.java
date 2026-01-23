@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("RecordSerializerFactory 단위 테스트")
@@ -31,11 +32,13 @@ class RecordSerializerFactoryTest {
       assertThat(recordSerializer.type()).isEqualTo(type);
     }
 
-    @Test
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" "})
     @DisplayName("null 또는 빈 값의 Type을 인자로 넘기면 기본 Type으로 객체를 생성한다.")
-    public void nullOrBlankTypeCreateDefaultType() {
+    public void nullOrBlankTypeCreateDefaultType(String type) { // Given
       // When
-      RecordSerializer recordSerializer = RecordSerializerFactory.create();
+      RecordSerializer recordSerializer = RecordSerializerFactory.create(type);
 
       // Then
       assertThat(recordSerializer).isNotNull();
