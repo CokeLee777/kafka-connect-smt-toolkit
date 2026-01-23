@@ -4,8 +4,8 @@ reviews:
     enabled: true
     base_branches:
       - develop
-      - release-*
-      - '^(?!main$).*'
+    ignored_branches:
+      - main
   request_changes_workflow: true
   high_level_summary_in_walkthrough: true
   fail_commit_status: true
