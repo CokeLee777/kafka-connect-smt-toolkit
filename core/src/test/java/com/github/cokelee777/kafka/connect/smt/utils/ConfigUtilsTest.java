@@ -69,7 +69,7 @@ class ConfigUtilsTest {
       // Then
       assertThat(normalizedPathPrefix).isNotEqualTo(originalPathPrefix);
       assertThat(normalizedPathPrefix).doesNotStartWith("//");
-      assertThat(normalizedPathPrefix).doesNotStartWith("//");
+      assertThat(normalizedPathPrefix).doesNotEndWith("//");
       assertThat(normalizedPathPrefix)
           .isEqualTo(originalPathPrefix.substring(2, originalPathPrefix.length() - 2));
     }
