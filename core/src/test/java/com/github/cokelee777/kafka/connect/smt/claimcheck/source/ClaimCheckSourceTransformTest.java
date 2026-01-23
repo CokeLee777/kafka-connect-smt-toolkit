@@ -135,7 +135,7 @@ class ClaimCheckSourceTransformTest {
     @DisplayName("ClaimCheckStorage가 주입된 상태에서 close 호출 시 storage의 close가 호출된다.")
     void shouldCloseInjectedClaimCheckStorage() {
       // Given & When
-      storage.close();
+      transform.close();
 
       // Then
       verify(storage, times(1)).close();
