@@ -3,7 +3,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry.RetryConfig;
+import com.github.cokelee777.kafka.connect.smt.common.retry.RetryConfig;
 import java.time.Duration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

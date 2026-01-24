@@ -107,7 +107,7 @@ configuration snippet for a source connector, demonstrating how to apply the `Cl
     "tasks.max": "1",
     "topic.prefix": "my-prefix-",
     "transforms": "claimcheck",
-    "transforms.claimcheck.type": "com.github.cokelee777.kafka.connect.smt.claimcheck.source.ClaimCheckSourceTransform",
+    "transforms.claimcheck.type": "com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSourceTransform",
     "transforms.claimcheck.threshold.bytes": "1048576",
     "transforms.claimcheck.storage.type": "s3",
     "transforms.claimcheck.storage.s3.bucket.name": "your-s3-bucket-name",

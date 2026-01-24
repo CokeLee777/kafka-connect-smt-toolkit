@@ -1,9 +1,11 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry;
+package com.github.cokelee777.kafka.connect.smt.common.retry;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.time.Duration;
+
+import com.github.cokelee777.kafka.connect.smt.common.retry.RetryConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry;
+package com.github.cokelee777.kafka.connect.smt.common.retry;
 
 public interface RetryStrategyFactory<T> {
 

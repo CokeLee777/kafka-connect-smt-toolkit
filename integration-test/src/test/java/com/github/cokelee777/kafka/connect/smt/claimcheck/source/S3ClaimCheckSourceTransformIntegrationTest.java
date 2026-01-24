@@ -2,6 +2,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.source;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSourceTransform;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchemaFields;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;

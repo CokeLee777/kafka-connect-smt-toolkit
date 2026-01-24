@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.source;
+package com.github.cokelee777.kafka.connect.smt.claimcheck;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
