@@ -1,8 +1,8 @@
-package com.github.cokelee777.kafka.connect.smt.utils;
+package com.github.cokelee777.kafka.connect.smt.common.utils;
 
-public class ConfigUtils {
+public class PathUtils {
 
-  private ConfigUtils() {}
+  private PathUtils() {}
 
   public static String normalizePathPrefix(String prefix) {
     if (prefix == null) {

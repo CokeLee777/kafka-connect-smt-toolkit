@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.internal;
+package com.github.cokelee777.kafka.connect.smt.common.serialization;
 
 import static org.assertj.core.api.Assertions.*;
 

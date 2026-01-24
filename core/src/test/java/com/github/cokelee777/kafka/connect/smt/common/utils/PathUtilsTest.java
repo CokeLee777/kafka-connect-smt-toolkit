@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.utils;
+package com.github.cokelee777.kafka.connect.smt.common.utils;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -6,8 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("ConfigUtils 단위 테스트")
-class ConfigUtilsTest {
+@DisplayName("PathUtils 단위 테스트")
+class PathUtilsTest {
 
   @Nested
   @DisplayName("normalizePathPrefix 메서드 테스트")
@@ -20,7 +20,7 @@ class ConfigUtilsTest {
       String originalPathPrefix = "dir1/dir2";
 
       // When
-      String normalizedPathPrefix = ConfigUtils.normalizePathPrefix(originalPathPrefix);
+      String normalizedPathPrefix = PathUtils.normalizePathPrefix(originalPathPrefix);
 
       // Then
       assertThat(normalizedPathPrefix).isEqualTo(originalPathPrefix);
@@ -33,7 +33,7 @@ class ConfigUtilsTest {
       String originalPathPrefix = "dir1/dir2/";
 
       // When
-      String normalizedPathPrefix = ConfigUtils.normalizePathPrefix(originalPathPrefix);
+      String normalizedPathPrefix = PathUtils.normalizePathPrefix(originalPathPrefix);
 
       // Then
       assertThat(normalizedPathPrefix).isNotEqualTo(originalPathPrefix);
@@ -49,7 +49,7 @@ class ConfigUtilsTest {
       String originalPathPrefix = "/dir1/dir2";
 
       // When
-      String normalizedPathPrefix = ConfigUtils.normalizePathPrefix(originalPathPrefix);
+      String normalizedPathPrefix = PathUtils.normalizePathPrefix(originalPathPrefix);
 
       // Then
       assertThat(normalizedPathPrefix).isNotEqualTo(originalPathPrefix);
@@ -64,7 +64,7 @@ class ConfigUtilsTest {
       String originalPathPrefix = "//dir1/dir2//";
 
       // When
-      String normalizedPathPrefix = ConfigUtils.normalizePathPrefix(originalPathPrefix);
+      String normalizedPathPrefix = PathUtils.normalizePathPrefix(originalPathPrefix);
 
       // Then
       assertThat(normalizedPathPrefix).isNotEqualTo(originalPathPrefix);
@@ -81,7 +81,7 @@ class ConfigUtilsTest {
       String originalPathPrefix = "dir1//dir2";
 
       // When
-      String normalizePathPrefix = ConfigUtils.normalizePathPrefix(originalPathPrefix);
+      String normalizePathPrefix = PathUtils.normalizePathPrefix(originalPathPrefix);
 
       // Then
       assertThat(normalizePathPrefix).isNotEqualTo(originalPathPrefix);

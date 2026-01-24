@@ -1,10 +1,11 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.internal;
+package com.github.cokelee777.kafka.connect.smt.common.serialization;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.jupiter.api.DisplayName;

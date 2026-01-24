@@ -2,7 +2,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.StorageType;
-import com.github.cokelee777.kafka.connect.smt.utils.ConfigUtils;
+import com.github.cokelee777.kafka.connect.smt.common.utils.PathUtils;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -119,7 +119,7 @@ public class S3Storage implements ClaimCheckStorage {
     SimpleConfig config = new SimpleConfig(Config.DEFINITION, configs);
 
     this.bucketName = config.getString(Config.BUCKET_NAME);
-    this.pathPrefix = ConfigUtils.normalizePathPrefix(config.getString(Config.PATH_PREFIX));
+    this.pathPrefix = PathUtils.normalizePathPrefix(config.getString(Config.PATH_PREFIX));
 
     if (this.s3Client == null) {
       S3ClientConfig s3ClientConfig = S3ClientConfigFactory.create(config);

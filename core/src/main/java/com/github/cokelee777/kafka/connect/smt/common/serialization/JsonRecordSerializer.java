@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.internal;
+package com.github.cokelee777.kafka.connect.smt.common.serialization;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
