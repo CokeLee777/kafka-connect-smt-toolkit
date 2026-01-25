@@ -65,12 +65,16 @@ public class GenericStructStrategy implements DefaultValueStrategy {
 
   private Object getDefaultValueForField(Field field) {
     Schema schema = field.schema();
-    if (schema.isOptional()) {
-      return null;
-    }
-
     if (schema.defaultValue() != null) {
       return schema.defaultValue();
+    }
+
+    if (isComplexType(schema)) {
+      return createDefaultForComplexType(schema);
+    }
+
+    if (schema.isOptional()) {
+      return null;
     }
 
     switch (schema.type()) {
@@ -88,14 +92,26 @@ public class GenericStructStrategy implements DefaultValueStrategy {
         return false;
       case BYTES:
         return ByteBuffer.wrap(new byte[0]);
+      default:
+        return null;
+    }
+  }
+
+  private boolean isComplexType(Schema schema) {
+    Schema.Type type = schema.type();
+    return type == Schema.Type.STRUCT || type == Schema.Type.ARRAY || type == Schema.Type.MAP;
+  }
+
+  private Object createDefaultForComplexType(Schema schema) {
+    switch (schema.type()) {
+      case STRUCT:
+        return createNestedDefaultStruct(schema);
       case ARRAY:
         return Collections.emptyList();
       case MAP:
         return Collections.emptyMap();
-      case STRUCT:
-        return createNestedDefaultStruct(schema);
       default:
-        return null;
+        throw new IllegalArgumentException("Not a complex type: " + schema.type());
     }
   }
 
