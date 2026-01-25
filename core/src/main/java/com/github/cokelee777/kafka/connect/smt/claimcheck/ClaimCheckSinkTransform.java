@@ -69,6 +69,18 @@ public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
     this.recordSerializer = recordSerializer;
   }
 
+  public String getStorageType() {
+    return storageType;
+  }
+
+  public ClaimCheckStorage getStorage() {
+    return storage;
+  }
+
+  public RecordSerializer getRecordSerializer() {
+    return recordSerializer;
+  }
+
   @Override
   public void configure(Map<String, ?> configs) {
     TransformConfig config = new TransformConfig(configs);
