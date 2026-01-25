@@ -5,13 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchemaFields;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.connect.data.Schema;
+import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
+import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -95,35 +97,123 @@ class ClaimCheckSourceTransformTest {
     }
 
     @Test
-    @DisplayName("올바른 SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
-    void rightSourceRecordReturnClaimCheckRecord() {
+    @DisplayName("Schemaless SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
+    void schemalessSourceRecordReturnClaimCheckRecord() {
       // Given
       String referenceUrl = "s3://test-bucket/test/path/uuid";
       when(storage.store(any())).thenReturn(referenceUrl);
+
+      Map<String, Object> value = new HashMap<>();
+      value.put("id", 1L);
+      value.put("name", "cokelee777");
       SourceRecord record =
-          new SourceRecord(
-              null,
-              null,
-              "test-bucket",
-              Schema.BYTES_SCHEMA,
-              "key",
-              Schema.STRING_SCHEMA,
-              "payload");
+          new SourceRecord(null, null, "test-topic", Schema.BYTES_SCHEMA, "key", null, value);
 
       // When
       SourceRecord claimCheckRecord = transform.apply(record);
 
       // Then
       assertThat(claimCheckRecord).isNotNull();
-      assertThat(claimCheckRecord.topic()).isEqualTo("test-bucket");
+      assertThat(claimCheckRecord.topic()).isEqualTo("test-topic");
       assertThat(claimCheckRecord.keySchema()).isEqualTo(Schema.BYTES_SCHEMA);
       assertThat(claimCheckRecord.key()).isEqualTo("key");
-      assertThat(claimCheckRecord.valueSchema()).isNotEqualTo(Schema.STRING_SCHEMA);
-      assertThat(claimCheckRecord.valueSchema()).isEqualTo(ClaimCheckSchema.SCHEMA);
-      assertThat(claimCheckRecord.value()).isNotEqualTo("payload");
+      assertThat(claimCheckRecord.valueSchema()).isNull();
+      assertThat(claimCheckRecord.value()).isNull();
+      Header claimCheckHeader = claimCheckRecord.headers().lastWithName(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader).isNotNull();
+      assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader.schema()).isEqualTo(ClaimCheckSchema.SCHEMA);
+    }
+
+    @Test
+    @DisplayName("flatSchema SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
+    void flatSchemaSourceRecordReturnClaimCheckRecord() {
+      // Given
+      String referenceUrl = "s3://test-bucket/test/path/uuid";
+      when(storage.store(any())).thenReturn(referenceUrl);
+
+      Schema valueSchema =
+          SchemaBuilder.struct()
+              .name("payload")
+              .field("id", Schema.INT64_SCHEMA)
+              .field("name", Schema.STRING_SCHEMA)
+              .build();
+      Struct value = new Struct(valueSchema).put("id", 1L).put("name", "cokelee777");
+      SourceRecord record =
+          new SourceRecord(
+              null, null, "test-topic", Schema.BYTES_SCHEMA, "key", valueSchema, value);
+
+      // When
+      SourceRecord claimCheckRecord = transform.apply(record);
+
+      // Then
+      assertThat(claimCheckRecord).isNotNull();
+      assertThat(claimCheckRecord.topic()).isEqualTo("test-topic");
+      assertThat(claimCheckRecord.keySchema()).isEqualTo(Schema.BYTES_SCHEMA);
+      assertThat(claimCheckRecord.key()).isEqualTo("key");
+      assertThat(claimCheckRecord.valueSchema().type()).isEqualTo(Schema.Type.STRUCT);
       assertThat(claimCheckRecord.value()).isInstanceOf(Struct.class);
-      assertThat(((Struct) claimCheckRecord.value()).get(ClaimCheckSchemaFields.REFERENCE_URL))
-          .isEqualTo(referenceUrl);
+      assertThat(((Struct) claimCheckRecord.value()).get("id")).isEqualTo(0L);
+      assertThat(((Struct) claimCheckRecord.value()).get("name")).isEqualTo("");
+      Header claimCheckHeader = claimCheckRecord.headers().lastWithName(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader).isNotNull();
+      assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader.schema()).isEqualTo(ClaimCheckSchema.SCHEMA);
+    }
+
+    @Test
+    @DisplayName("DebeziumSchema SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
+    void debeziumSchemaSourceRecordReturnClaimCheckRecord() {
+      // Given
+      String referenceUrl = "s3://test-bucket/test/path/uuid";
+      when(storage.store(any())).thenReturn(referenceUrl);
+
+      Schema rowSchema =
+          SchemaBuilder.struct()
+              .name("test.db.table.Value")
+              .field("id", Schema.INT64_SCHEMA)
+              .field("name", Schema.STRING_SCHEMA)
+              .optional()
+              .build();
+      Schema envelopeSchema =
+          SchemaBuilder.struct()
+              .name("io.debezium.connector.mysql.Envelope")
+              .field("before", rowSchema)
+              .field("after", rowSchema)
+              .field("op", Schema.STRING_SCHEMA)
+              .field("ts_ms", Schema.OPTIONAL_INT64_SCHEMA)
+              .build();
+      Struct before = new Struct(rowSchema).put("id", 1L).put("name", "before cokelee777");
+      Struct after = new Struct(rowSchema).put("id", 1L).put("name", "after cokelee777");
+      long tsMs = System.currentTimeMillis();
+      Struct envelope =
+          new Struct(envelopeSchema)
+              .put("before", before)
+              .put("after", after)
+              .put("op", "c")
+              .put("ts_ms", tsMs);
+      SourceRecord record =
+          new SourceRecord(
+              null, null, "test-topic", Schema.BYTES_SCHEMA, "key", envelopeSchema, envelope);
+
+      // When
+      SourceRecord claimCheckRecord = transform.apply(record);
+
+      // Then
+      assertThat(claimCheckRecord).isNotNull();
+      assertThat(claimCheckRecord.topic()).isEqualTo("test-topic");
+      assertThat(claimCheckRecord.keySchema()).isEqualTo(Schema.BYTES_SCHEMA);
+      assertThat(claimCheckRecord.key()).isEqualTo("key");
+      assertThat(claimCheckRecord.valueSchema().type()).isEqualTo(Schema.Type.STRUCT);
+      assertThat(claimCheckRecord.value()).isInstanceOf(Struct.class);
+      assertThat(((Struct) claimCheckRecord.value()).getStruct("before")).isNull();
+      assertThat(((Struct) claimCheckRecord.value()).getStruct("after")).isNull();
+      assertThat(((Struct) claimCheckRecord.value()).getString("op")).isEqualTo("c");
+      assertThat(((Struct) claimCheckRecord.value()).getInt64("ts_ms")).isEqualTo(tsMs);
+      Header claimCheckHeader = claimCheckRecord.headers().lastWithName(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader).isNotNull();
+      assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader.schema()).isEqualTo(ClaimCheckSchema.SCHEMA);
     }
   }
 
