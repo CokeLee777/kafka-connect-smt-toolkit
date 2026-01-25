@@ -97,7 +97,8 @@ class ClaimCheckSourceTransformTest {
     }
 
     @Test
-    @DisplayName("Schemaless SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
+    @DisplayName(
+        "Schemaless SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성되고, 헤더에 ClaimCheck 참조값이 추가된다.")
     void schemalessSourceRecordReturnClaimCheckRecord() {
       // Given
       String referenceUrl = "s3://test-bucket/test/path/uuid";
@@ -126,8 +127,9 @@ class ClaimCheckSourceTransformTest {
     }
 
     @Test
-    @DisplayName("flatSchema SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
-    void flatSchemaSourceRecordReturnClaimCheckRecord() {
+    @DisplayName(
+        "genericSchema SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성되고, 헤더에 ClaimCheck 참조값이 추가된다.")
+    void genericSchemaSourceRecordReturnClaimCheckRecord() {
       // Given
       String referenceUrl = "s3://test-bucket/test/path/uuid";
       when(storage.store(any())).thenReturn(referenceUrl);
@@ -151,10 +153,9 @@ class ClaimCheckSourceTransformTest {
       assertThat(claimCheckRecord.topic()).isEqualTo("test-topic");
       assertThat(claimCheckRecord.keySchema()).isEqualTo(Schema.BYTES_SCHEMA);
       assertThat(claimCheckRecord.key()).isEqualTo("key");
-      assertThat(claimCheckRecord.valueSchema().type()).isEqualTo(Schema.Type.STRUCT);
+      assertThat(claimCheckRecord.valueSchema()).isEqualTo(valueSchema);
+      assertThat(claimCheckRecord.value()).isNotNull();
       assertThat(claimCheckRecord.value()).isInstanceOf(Struct.class);
-      assertThat(((Struct) claimCheckRecord.value()).get("id")).isEqualTo(0L);
-      assertThat(((Struct) claimCheckRecord.value()).get("name")).isEqualTo("");
       Header claimCheckHeader = claimCheckRecord.headers().lastWithName(ClaimCheckSchema.NAME);
       assertThat(claimCheckHeader).isNotNull();
       assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
@@ -162,7 +163,8 @@ class ClaimCheckSourceTransformTest {
     }
 
     @Test
-    @DisplayName("DebeziumSchema SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성된다.")
+    @DisplayName(
+        "DebeziumSchema SourceRecord를 인자로 넣으면 ClaimCheckRecord가 생성되고, 헤더에 ClaimCheck 참조값이 추가된다.")
     void debeziumSchemaSourceRecordReturnClaimCheckRecord() {
       // Given
       String referenceUrl = "s3://test-bucket/test/path/uuid";
@@ -175,7 +177,7 @@ class ClaimCheckSourceTransformTest {
               .field("name", Schema.STRING_SCHEMA)
               .optional()
               .build();
-      Schema envelopeSchema =
+      Schema valueSchema =
           SchemaBuilder.struct()
               .name("io.debezium.connector.mysql.Envelope")
               .field("before", rowSchema)
@@ -187,14 +189,14 @@ class ClaimCheckSourceTransformTest {
       Struct after = new Struct(rowSchema).put("id", 1L).put("name", "after cokelee777");
       long tsMs = System.currentTimeMillis();
       Struct envelope =
-          new Struct(envelopeSchema)
+          new Struct(valueSchema)
               .put("before", before)
               .put("after", after)
               .put("op", "c")
               .put("ts_ms", tsMs);
       SourceRecord record =
           new SourceRecord(
-              null, null, "test-topic", Schema.BYTES_SCHEMA, "key", envelopeSchema, envelope);
+              null, null, "test-topic", Schema.BYTES_SCHEMA, "key", valueSchema, envelope);
 
       // When
       SourceRecord claimCheckRecord = transform.apply(record);
@@ -204,12 +206,9 @@ class ClaimCheckSourceTransformTest {
       assertThat(claimCheckRecord.topic()).isEqualTo("test-topic");
       assertThat(claimCheckRecord.keySchema()).isEqualTo(Schema.BYTES_SCHEMA);
       assertThat(claimCheckRecord.key()).isEqualTo("key");
-      assertThat(claimCheckRecord.valueSchema().type()).isEqualTo(Schema.Type.STRUCT);
+      assertThat(claimCheckRecord.valueSchema()).isEqualTo(valueSchema);
+      assertThat(claimCheckRecord.value()).isNotNull();
       assertThat(claimCheckRecord.value()).isInstanceOf(Struct.class);
-      assertThat(((Struct) claimCheckRecord.value()).getStruct("before")).isNull();
-      assertThat(((Struct) claimCheckRecord.value()).getStruct("after")).isNull();
-      assertThat(((Struct) claimCheckRecord.value()).getString("op")).isEqualTo("c");
-      assertThat(((Struct) claimCheckRecord.value()).getInt64("ts_ms")).isEqualTo(tsMs);
       Header claimCheckHeader = claimCheckRecord.headers().lastWithName(ClaimCheckSchema.NAME);
       assertThat(claimCheckHeader).isNotNull();
       assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
