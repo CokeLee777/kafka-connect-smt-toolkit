@@ -131,7 +131,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
       return record;
     }
 
-    log.info(
+    log.debug(
         "Record size {} exceeds threshold {}, applying claim check",
         serializedRecord.length,
         this.thresholdBytes);

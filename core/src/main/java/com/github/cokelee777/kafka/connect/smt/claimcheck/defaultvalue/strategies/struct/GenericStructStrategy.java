@@ -39,7 +39,7 @@ public class GenericStructStrategy implements DefaultValueStrategy {
     if (!canHandle(record)) {
       throw new IllegalArgumentException(
           String.format(
-              "Cannot handle record. Expected non-Debezium STRUCT schema. "
+              "Cannot handle record. Expected STRUCT schema with Struct value. "
                   + "Got schema: %s, value type: %s",
               record.valueSchema() != null ? record.valueSchema().name() : "null",
               record.value() != null ? record.value().getClass().getSimpleName() : "null"));
