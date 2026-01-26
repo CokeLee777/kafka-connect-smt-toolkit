@@ -1,7 +1,7 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry.RetryConfig;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry.RetryStrategyFactory;
+import com.github.cokelee777.kafka.connect.smt.common.retry.RetryConfig;
+import com.github.cokelee777.kafka.connect.smt.common.retry.RetryStrategyFactory;
 import software.amazon.awssdk.retries.StandardRetryStrategy;
 import software.amazon.awssdk.retries.api.BackoffStrategy;
 

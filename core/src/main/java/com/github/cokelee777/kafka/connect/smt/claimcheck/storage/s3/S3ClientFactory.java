@@ -1,7 +1,7 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry.RetryConfig;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.retry.RetryStrategyFactory;
+import com.github.cokelee777.kafka.connect.smt.common.retry.RetryConfig;
+import com.github.cokelee777.kafka.connect.smt.common.retry.RetryStrategyFactory;
 import java.net.URI;
 import java.time.Duration;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
