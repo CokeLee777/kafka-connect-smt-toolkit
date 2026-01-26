@@ -9,7 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-@DisplayName("ClaimCheckReference 단위 테스트")
+@DisplayName("ClaimCheckValue 단위 테스트")
 class ClaimCheckValueTest {
 
   @Nested
