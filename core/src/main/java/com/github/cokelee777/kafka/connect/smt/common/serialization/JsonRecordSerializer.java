@@ -102,11 +102,11 @@ public class JsonRecordSerializer implements RecordSerializer {
   }
 
   @Override
-  public SchemaAndValue deserialize(String topic, byte[] payload) {
+  public SchemaAndValue deserialize(String topic, byte[] recordBytes) {
     try {
-      return schemaValueConverter.toConnectData(topic, payload);
+      return schemaValueConverter.toConnectData(topic, recordBytes);
     } catch (Exception schemaException) {
-      return deserializeSchemaless(topic, payload, schemaException);
+      return deserializeSchemaless(topic, recordBytes, schemaException);
     }
   }
 
