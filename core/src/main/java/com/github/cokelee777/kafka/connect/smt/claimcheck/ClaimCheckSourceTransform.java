@@ -19,6 +19,14 @@ import org.apache.kafka.connect.transforms.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SMT that offloads large payloads to external storage and replaces them with a claim check
+ * reference.
+ *
+ * <p>When a record exceeds the configured threshold, its payload is stored externally (e.g., S3)
+ * and the record value is replaced with a placeholder while the reference URL is added to the
+ * headers.
+ */
 public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
 
   private static final Logger log = LoggerFactory.getLogger(ClaimCheckSourceTransform.class);
