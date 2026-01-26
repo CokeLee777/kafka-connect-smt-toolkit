@@ -80,6 +80,10 @@ public class GenericStructStrategy implements DefaultValueStrategy {
     switch (schema.type()) {
       case STRING:
         return "";
+      case INT8:
+        return (byte) 0;
+      case INT16:
+        return (short) 0;
       case INT32:
         return 0;
       case INT64:
