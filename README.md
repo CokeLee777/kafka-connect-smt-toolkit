@@ -46,18 +46,18 @@ structured data using Kafka Connect's `Schema` and `Struct` API.
 
 **Tested and Verified:**
 
-| Connector                               | Tested Version | Status     | Notes                                                                      |
-|-----------------------------------------|----------------|------------|----------------------------------------------------------------------------|
+*Source Connectors (ClaimCheckSourceTransform):*
+
+| Connector                               | Tested Version | Status     | Notes                                                                                |
+|-----------------------------------------|----------------|------------|--------------------------------------------------------------------------------------|
 | **Debezium MySQL CDC Source Connector** | 2.1.4          | ✅ Verified | Tested with Debezium CDC envelope (before/after/source/op) and deeply nested schemas |
-| **Confluent JDBC Source Connector**     | 10.7.6         | ✅ Verified | Tested with complex nested Struct schemas (non-CDC, snapshot-based records) |
+| **Confluent JDBC Source Connector**     | 10.7.6         | ✅ Verified | Tested with complex nested Struct schemas (non-CDC, snapshot-based records)          |
 
-**Expected to Work (Not Yet Tested):**
+*Sink Connectors (ClaimCheckSinkTransform):*
 
-| Connector                                    | Expected Compatibility | Notes                                                       |
-|----------------------------------------------|------------------------|-------------------------------------------------------------|
-| **Debezium PostgreSQL CDC Source Connector** | 2.x                    | Should work with similar CDC envelope structure             |
-| **Debezium Oracle CDC Source Connector**     | 2.x                    | Should work with similar CDC envelope structure             |
-| **Custom Source Connectors**                 | Any                    | Must produce `org.apache.kafka.connect.data.Struct` records |
+| Connector                         | Tested Version | Status     | Notes                                                                                                       |
+|-----------------------------------|----------------|------------|-------------------------------------------------------------------------------------------------------------|
+| **Confluent JDBC Sink Connector** | 10.7.6         | ✅ Verified | Tested with restored Struct records from claim check references, including primitive and nested field types |
 
 > **Note:** If you test this SMT with other connectors, please consider contributing your findings via GitHub issues or
 > pull requests!
@@ -68,13 +68,6 @@ structured data using Kafka Connect's `Schema` and `Struct` API.
 
 - ✅ **Confluent Platform 7.6.1** (includes Apache Kafka 3.6.x) - Verified
 - ✅ Built against **Kafka Connect API 3.8.1** for forward compatibility
-
-**Expected Compatibility:**
-
-- ✅ **Kafka Connect 2.0 - 3.8.x**: Should be compatible (uses stable Connect API)
-- ✅ **Kafka Connect 3.9+**: Expected to be compatible
-- ✅ **Confluent Platform 7.x**: Should be compatible with all 7.x versions
-- ⚠️ **Kafka Connect 1.x**: Not tested, may require modifications
 
 > **Note:** The SMT is built against Kafka Connect API 3.8.1 but tested on Confluent Platform 7.6.1 (Kafka 3.6.x). The
 > backward compatibility of Connect API allows newer builds to work on older runtime versions.
@@ -87,17 +80,27 @@ The ClaimCheck SMT operates at the **pre-serialization stage** of the Kafka Conn
 Source Connector → SMT (ClaimCheck) → Converter (JSON/Avro/Protobuf) → Kafka Broker
 ```
 
+```
+Kafka Broker → Converter (JSON/Avro/Protobuf) → SMT (ClaimCheck) → Sink Connector
+```
+
 This means:
 
 - ✅ Works **independently of Converter choice** (JSON, Avro, Protobuf, etc.)
 - ✅ Processes data as Java objects (`Struct`), not serialized bytes
-- ✅ Compatible with any connector producing `Schema + Struct` records
-- ❌ Does **not** work with schema-less connectors that produce raw `Map<String, Object>` or primitive types
+- ✅ **Full support** for `Schema + Struct` records (Debezium CDC, JDBC Source, etc.)
+- ✅ **Partial support** for schemaless records (`Map<String, Object>`) - value is replaced with `null`, original payload
+  stored in external storage and restored on sink side
+- ❌ Does **not** support primitive type values (e.g., raw `String`, `Integer`, `byte[]`)
 
 #### Configuration
 
-To use the ClaimCheck SMT, you'll need to configure it in your Kafka Connect connector. Below is an example
-configuration snippet for a source connector, demonstrating how to apply the `ClaimCheckSourceTransform`.
+To use the ClaimCheck SMT, you'll need to configure it in your Kafka Connect connector.
+
+##### Source Connector Configuration
+
+Below is an example configuration snippet for a source connector, demonstrating how to apply
+the `ClaimCheckSourceTransform`.
 
 ```jsonc
 {
@@ -121,25 +124,60 @@ configuration snippet for a source connector, demonstrating how to apply the `Cl
 }
 ```
 
+##### Sink Connector Configuration
+
+Below is an example configuration snippet for a sink connector, demonstrating how to apply
+the `ClaimCheckSinkTransform`.
+
+```
+{
+  "name": "my-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": "1",
+    "topic.prefix": "my-prefix-",
+    "transforms": "claimcheck",
+    "transforms.claimcheck.type": "com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSinkTransform",
+    "transforms.claimcheck.storage.type": "s3",
+    "transforms.claimcheck.storage.s3.bucket.name": "your-s3-bucket-name",
+    "transforms.claimcheck.storage.s3.region": "your-aws-region",
+    "transforms.claimcheck.storage.s3.path.prefix": "your-s3/prefix/path",
+    "transforms.claimcheck.storage.s3.retry.max": "3",
+    "transforms.claimcheck.storage.s3.retry.backoff.ms": "300",
+    "transforms.claimcheck.storage.s3.retry.max.backoff.ms": "20000"
+    // ... other connector configurations
+  }
+}
+```
+
 **ClaimCheck SMT Configuration Properties:**
 
-* `threshold.bytes`: (Optional) Messages larger than this size (in bytes) will be offloaded to external storage.
-  Defaults to 1MB (1048576 bytes).
-* `storage.type`: (Required) The type of storage backend to use (e.g., `s3`).
-* `storage.s3.bucket.name`: (Required) The name of the S3 bucket to store the offloaded messages.
-* `storage.s3.region`: (Optional) The AWS region of the S3 bucket. Defaults to `ap-northeast-2`.
-* `storage.s3.path.prefix`: (Optional) The prefix (directory path) within the S3 bucket where offloaded messages will be
-  stored. Defaults to `claim-checks`. Offloaded objects are stored directly under this prefix and named with a randomly
-  generated UUID (no original message filename or key is preserved).
-  Example object key: `<prefix>/<uuid>` (e.g. `claim-checks/3f2a1b4e-9c7d-4a2f-8b6e-0d1c2e3f4a5b`).
-* `storage.s3.retry.max`: (Optional) The maximum number of retry attempts for S3 upload failures. This value specifies
-  the number of retries excluding the initial attempt. Defaults to `3`. Set to `0` to disable retries and fail
-  immediately on the first upload error.
-* `storage.s3.retry.backoff.ms`: (Optional) The initial backoff delay (in milliseconds) before retrying a failed S3
-  upload. This value is used as the base delay for exponential backoff. Defaults to `300` milliseconds.
-* `storage.s3.retry.max.backoff.ms`: (Optional) The maximum backoff delay (in milliseconds) between S3 upload retries.
-  Even if the exponential backoff calculation exceeds this value, the delay will be capped at this maximum. Defaults
-  to `20000` milliseconds (20 seconds).
+*ClaimCheckSourceTransform Properties:*
+
+| Property          | Required | Default         | Description                                                                      |
+|-------------------|----------|-----------------|----------------------------------------------------------------------------------|
+| `threshold.bytes` | No       | `1048576` (1MB) | Messages larger than this size (in bytes) will be offloaded to external storage. |
+| `storage.type`    | Yes      | -               | The type of storage backend to use (e.g., `s3`).                                 |
+
+*ClaimCheckSinkTransform Properties:*
+
+| Property       | Required | Default | Description                                                                                      |
+|----------------|----------|---------|--------------------------------------------------------------------------------------------------|
+| `storage.type` | Yes      | -       | The type of storage backend to use (e.g., `s3`). Must match the source connector's storage type. |
+
+*Common S3 Storage Properties (Both Source and Sink):*
+
+| Property                          | Required | Default          | Description                                                                                                                                                                                          |
+|-----------------------------------|----------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `storage.s3.bucket.name`          | Yes      | -                | The name of the S3 bucket to store/retrieve the offloaded messages.                                                                                                                                  |
+| `storage.s3.region`               | No       | `ap-northeast-2` | The AWS region of the S3 bucket.                                                                                                                                                                     |
+| `storage.s3.path.prefix`          | No       | `claim-checks`   | The prefix (directory path) within the S3 bucket where offloaded messages are stored. Objects are named with a randomly generated UUID. Example: `claim-checks/3f2a1b4e-9c7d-4a2f-8b6e-0d1c2e3f4a5b` |
+| `storage.s3.retry.max`            | No       | `3`              | Maximum number of retry attempts for S3 operations (excluding the initial attempt). Set to `0` to disable retries.                                                                                   |
+| `storage.s3.retry.backoff.ms`     | No       | `300`            | Initial backoff delay (in milliseconds) before retrying. Used as the base for exponential backoff.                                                                                                   |
+| `storage.s3.retry.max.backoff.ms` | No       | `20000`          | Maximum backoff delay (in milliseconds) between retries. Caps the exponential backoff calculation.                                                                                                   |
+
+> **Important:** The Sink connector's S3 configuration (`bucket.name`, `region`, `path.prefix`) must match the Source
+> connector's configuration to correctly retrieve the offloaded payloads.
 
 #### Usage
 
