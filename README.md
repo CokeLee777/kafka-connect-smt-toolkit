@@ -135,7 +135,7 @@ the `ClaimCheckSinkTransform`.
   "config": {
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
-    "topic.prefix": "my-prefix-",
+    "topics": "my-topic",
     "transforms": "claimcheck",
     "transforms.claimcheck.type": "com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSinkTransform",
     "transforms.claimcheck.storage.type": "s3",
