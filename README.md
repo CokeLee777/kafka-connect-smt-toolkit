@@ -89,8 +89,7 @@ This means:
 - ✅ Works **independently of Converter choice** (JSON, Avro, Protobuf, etc.)
 - ✅ Processes data as Java objects (`Struct`), not serialized bytes
 - ✅ **Full support** for `Schema + Struct` records (Debezium CDC, JDBC Source, etc.)
-- ✅ **Partial support** for schemaless records (`Map<String, Object>`) - value is replaced with `null`, original payload
-  stored in external storage and restored on sink side
+- ✅ **Partial support** for schemaless records (`Map<String, Object>`) - entire value is offloaded to external storage and replaced with claim check metadata, then restored on sink side
 - ❌ Does **not** support primitive type values (e.g., raw `String`, `Integer`, `byte[]`)
 
 #### Configuration
