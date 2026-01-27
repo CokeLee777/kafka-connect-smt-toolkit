@@ -7,18 +7,26 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.apache.kafka.common.config.ConfigException;
 
+/** Factory for creating {@link ClaimCheckStorage} instances. */
 public class ClaimCheckStorageFactory {
 
   private static final Map<String, Supplier<ClaimCheckStorage>> STORAGE_MAP = new HashMap<>();
 
   static {
-    register(StorageType.S3.type(), S3Storage::new);
+    register(ClaimCheckStorageType.S3.type(), S3Storage::new);
   }
 
   private static void register(String type, Supplier<ClaimCheckStorage> supplier) {
     STORAGE_MAP.put(type.toLowerCase(Locale.ROOT), supplier);
   }
 
+  /**
+   * Creates a storage instance of the specified type.
+   *
+   * @param type the storage type (e.g., "s3")
+   * @return a new ClaimCheckStorage instance
+   * @throws ConfigException if the type is unsupported or blank
+   */
   public static ClaimCheckStorage create(String type) {
     if (type == null || type.isBlank()) {
       throw new ConfigException("Storage type must be provided");

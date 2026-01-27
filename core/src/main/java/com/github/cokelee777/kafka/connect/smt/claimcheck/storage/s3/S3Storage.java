@@ -1,16 +1,22 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.StorageType;
-import com.github.cokelee777.kafka.connect.smt.utils.ConfigUtils;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
+import com.github.cokelee777.kafka.connect.smt.common.utils.PathUtils;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 public class S3Storage implements ClaimCheckStorage {
 
@@ -105,7 +111,7 @@ public class S3Storage implements ClaimCheckStorage {
 
   @Override
   public String type() {
-    return StorageType.S3.type();
+    return ClaimCheckStorageType.S3.type();
   }
 
   @Override
@@ -113,10 +119,10 @@ public class S3Storage implements ClaimCheckStorage {
     SimpleConfig config = new SimpleConfig(Config.DEFINITION, configs);
 
     this.bucketName = config.getString(Config.BUCKET_NAME);
-    this.pathPrefix = ConfigUtils.normalizePathPrefix(config.getString(Config.PATH_PREFIX));
+    this.pathPrefix = PathUtils.normalizePathPrefix(config.getString(Config.PATH_PREFIX));
 
     if (this.s3Client == null) {
-      S3ClientConfig s3ClientConfig = S3ClientConfigFactory.create(config);
+      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
 
       S3ClientFactory s3ClientFactory = new S3ClientFactory();
       this.s3Client = s3ClientFactory.create(s3ClientConfig);
@@ -125,20 +131,47 @@ public class S3Storage implements ClaimCheckStorage {
 
   @Override
   public String store(byte[] payload) {
-    if (this.s3Client == null) {
-      throw new IllegalStateException("S3Client is not initialized. Call configure() first.");
-    }
+    checkClientInitialized();
 
-    String key = this.pathPrefix + "/" + UUID.randomUUID();
+    String key = generateUniqueKey();
+    PutObjectRequest putObjectRequest =
+        PutObjectRequest.builder().bucket(this.bucketName).key(key).build();
     try {
-      PutObjectRequest putObjectRequest =
-          PutObjectRequest.builder().bucket(this.bucketName).key(key).build();
       this.s3Client.putObject(putObjectRequest, RequestBody.fromBytes(payload));
-
-      return "s3://" + this.bucketName + "/" + key;
-    } catch (Exception e) {
+      return buildReferenceUrl(key);
+    } catch (S3Exception e) {
       throw new RuntimeException(
           "Failed to upload to S3. Bucket: " + this.bucketName + ", Key: " + key, e);
+    }
+  }
+
+  private String generateUniqueKey() {
+    return this.pathPrefix + "/" + UUID.randomUUID();
+  }
+
+  private String buildReferenceUrl(String key) {
+    return "s3://" + this.bucketName + "/" + key;
+  }
+
+  @Override
+  public byte[] retrieve(String referenceUrl) {
+    checkClientInitialized();
+
+    String key = parseKeyFrom(referenceUrl);
+    GetObjectRequest getObjectRequest =
+        GetObjectRequest.builder().bucket(this.bucketName).key(key).build();
+    try (ResponseInputStream<GetObjectResponse> s3Object =
+        this.s3Client.getObject(getObjectRequest)) {
+      return s3Object.readAllBytes();
+    } catch (S3Exception | IOException e) {
+      throw new RuntimeException(
+          "Failed to retrieve from S3. Bucket: " + this.bucketName + ", Key: " + key, e);
+    }
+  }
+
+  private void checkClientInitialized() {
+    if (this.s3Client == null) {
+      throw new IllegalStateException("S3Client is not initialized. Call configure() first.");
     }
   }
 
@@ -147,5 +180,29 @@ public class S3Storage implements ClaimCheckStorage {
     if (this.s3Client != null) {
       s3Client.close();
     }
+  }
+
+  private String parseKeyFrom(String referenceUrl) {
+    Objects.requireNonNull(referenceUrl, "referenceUrl must not be null");
+    final String prefix = "s3://";
+    if (!referenceUrl.startsWith(prefix)) {
+      throw new IllegalArgumentException("S3 reference URL must start with 's3://'");
+    }
+
+    String path = referenceUrl.substring(prefix.length());
+    int firstSlash = path.indexOf('/');
+    if (firstSlash == -1 || firstSlash == 0 || firstSlash == path.length() - 1) {
+      throw new IllegalArgumentException("Invalid S3 reference URL: " + referenceUrl);
+    }
+
+    String bucketInUrl = path.substring(0, firstSlash);
+    if (!this.bucketName.equals(bucketInUrl)) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Bucket in reference URL ('%s') does not match configured bucket ('%s')",
+              bucketInUrl, this.bucketName));
+    }
+
+    return path.substring(firstSlash + 1);
   }
 }
