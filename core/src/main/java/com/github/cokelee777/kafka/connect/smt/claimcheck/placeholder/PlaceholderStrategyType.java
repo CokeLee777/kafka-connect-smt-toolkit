@@ -1,6 +1,6 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder;
 
-/** Supported default value strategy types. */
+/** Supported placeholder strategy types. */
 public enum PlaceholderStrategyType {
   SCHEMALESS("schemaless"),
   DEBEZIUM_STRUCT("debezium_struct"),
