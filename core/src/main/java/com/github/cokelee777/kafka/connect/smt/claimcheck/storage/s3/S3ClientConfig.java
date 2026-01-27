@@ -1,5 +1,7 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
+import org.apache.kafka.connect.transforms.util.SimpleConfig;
+
 /** Configuration for creating an S3 client. */
 public class S3ClientConfig {
 
@@ -18,7 +20,7 @@ public class S3ClientConfig {
    * @param retryBackoffMs initial backoff in milliseconds
    * @param retryMaxBackoffMs maximum backoff in milliseconds
    */
-  public S3ClientConfig(
+  private S3ClientConfig(
       String region,
       String endpointOverride,
       int retryMax,
@@ -29,6 +31,23 @@ public class S3ClientConfig {
     this.retryMax = retryMax;
     this.retryBackoffMs = retryBackoffMs;
     this.retryMaxBackoffMs = retryMaxBackoffMs;
+  }
+
+  /**
+   * Creates an S3ClientConfig from a Kafka Connect SimpleConfig.
+   *
+   * @param config the Kafka Connect configuration
+   * @return a new S3ClientConfig instance
+   */
+  public static S3ClientConfig from(SimpleConfig config) {
+    String region = config.getString(S3Storage.Config.REGION);
+    String endpointOverride = config.getString(S3Storage.Config.ENDPOINT_OVERRIDE);
+    int retryMax = config.getInt(S3Storage.Config.RETRY_MAX);
+    long retryBackoffMs = config.getLong(S3Storage.Config.RETRY_BACKOFF_MS);
+    long retryMaxBackoffMs = config.getLong(S3Storage.Config.RETRY_MAX_BACKOFF_MS);
+
+    return new S3ClientConfig(
+        region, endpointOverride, retryMax, retryBackoffMs, retryMaxBackoffMs);
   }
 
   /** Returns the AWS region. */

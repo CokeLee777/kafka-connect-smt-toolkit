@@ -3,36 +3,40 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.io.Serializable;
+import java.util.Map;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
-@DisplayName("S3ClientConfigFactory 단위 테스트")
-class S3ClientConfigFactoryTest {
-
-  @Mock private SimpleConfig config;
+@DisplayName("S3ClientConfig 단위 테스트")
+class S3ClientConfigTest {
 
   @Nested
-  @DisplayName("create 메서드 테스트")
-  class CreateTest {
+  @DisplayName("from 메서드 테스트")
+  class FromTest {
 
     @Test
     @DisplayName("올바른 설정정보를 세팅하면 정상적으로 S3ClientConfig가 생성된다.")
     public void rightConfig() {
       // Given
-      when(config.getString(S3Storage.Config.REGION)).thenReturn("ap-northeast-2");
-      when(config.getString(S3Storage.Config.ENDPOINT_OVERRIDE)).thenReturn(null);
-      when(config.getInt(S3Storage.Config.RETRY_MAX)).thenReturn(3);
-      when(config.getLong(S3Storage.Config.RETRY_BACKOFF_MS)).thenReturn(300L);
-      when(config.getLong(S3Storage.Config.RETRY_MAX_BACKOFF_MS)).thenReturn(20000L);
+      Map<String, ? extends Serializable> originals =
+          Map.of(
+              S3Storage.Config.BUCKET_NAME,
+              "test-bucket",
+              S3Storage.Config.REGION,
+              "ap-northeast-2",
+              S3Storage.Config.RETRY_MAX,
+              3,
+              S3Storage.Config.RETRY_BACKOFF_MS,
+              300L,
+              S3Storage.Config.RETRY_MAX_BACKOFF_MS,
+              20000L);
+      SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
 
       // When
-      S3ClientConfig s3ClientConfig = S3ClientConfigFactory.create(config);
+      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
 
       // Then
       assertThat(s3ClientConfig).isNotNull();
@@ -47,15 +51,24 @@ class S3ClientConfigFactoryTest {
     @DisplayName("endpointOverride가 설정되어도 정상적으로 S3ClientConfig가 생성된다.")
     public void withEndpointOverride() {
       // Given
-      when(config.getString(S3Storage.Config.REGION)).thenReturn("ap-northeast-2");
-      when(config.getString(S3Storage.Config.ENDPOINT_OVERRIDE))
-          .thenReturn("http://localhost:4566");
-      when(config.getInt(S3Storage.Config.RETRY_MAX)).thenReturn(3);
-      when(config.getLong(S3Storage.Config.RETRY_BACKOFF_MS)).thenReturn(300L);
-      when(config.getLong(S3Storage.Config.RETRY_MAX_BACKOFF_MS)).thenReturn(20000L);
+      Map<String, ? extends Serializable> originals =
+          Map.of(
+              S3Storage.Config.BUCKET_NAME,
+              "test-bucket",
+              S3Storage.Config.REGION,
+              "ap-northeast-2",
+              S3Storage.Config.ENDPOINT_OVERRIDE,
+              "http://localhost:4566",
+              S3Storage.Config.RETRY_MAX,
+              3,
+              S3Storage.Config.RETRY_BACKOFF_MS,
+              300L,
+              S3Storage.Config.RETRY_MAX_BACKOFF_MS,
+              20000L);
+      SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
 
       // When
-      S3ClientConfig s3ClientConfig = S3ClientConfigFactory.create(config);
+      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
 
       // Then
       assertThat(s3ClientConfig).isNotNull();
