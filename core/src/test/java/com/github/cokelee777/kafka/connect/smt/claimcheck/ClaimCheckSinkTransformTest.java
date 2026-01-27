@@ -119,7 +119,7 @@ class ClaimCheckSinkTransformTest {
       Struct claimCheckValue =
           new Struct(ClaimCheckSchema.SCHEMA)
               .put(ClaimCheckSchemaFields.REFERENCE_URL, referenceUrl)
-              .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, (long) fetchedJson.length())
+              .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, fetchedJson.length())
               .put(ClaimCheckSchemaFields.UPLOADED_AT, System.currentTimeMillis());
       SinkRecord record =
           new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", null, null, 0);
@@ -156,7 +156,7 @@ class ClaimCheckSinkTransformTest {
       Struct claimCheckValue =
           new Struct(ClaimCheckSchema.SCHEMA)
               .put(ClaimCheckSchemaFields.REFERENCE_URL, referenceUrl)
-              .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, (long) fetchedJson.length())
+              .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, fetchedJson.length())
               .put(ClaimCheckSchemaFields.UPLOADED_AT, System.currentTimeMillis());
 
       Schema valueSchema =
@@ -198,7 +198,7 @@ class ClaimCheckSinkTransformTest {
       Struct claimCheckValue =
           new Struct(ClaimCheckSchema.SCHEMA)
               .put(ClaimCheckSchemaFields.REFERENCE_URL, referenceUrl)
-              .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, (long) fetchedJson.length())
+              .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, fetchedJson.length())
               .put(ClaimCheckSchemaFields.UPLOADED_AT, System.currentTimeMillis());
 
       Schema rowSchema =

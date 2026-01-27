@@ -21,7 +21,7 @@ class ClaimCheckValueTest {
     void rightArgs() {
       // Given
       String referenceUrl = "s3://test-bucket/claim-checks";
-      long originalSizeBytes = 1024 * 1024;
+      int originalSizeBytes = 1024 * 1024;
 
       // When
       ClaimCheckValue claimCheckValue =
@@ -38,7 +38,7 @@ class ClaimCheckValueTest {
     @ValueSource(strings = {" "})
     @DisplayName("null 또는 빈 값의 ReferenceUrl을 인자로 넘기면 예외가 발생한다.")
     void nullOrBlankReferenceUrlCauseException(String referenceUrl) { // Given
-      long originalSizeBytes = 1024 * 1024;
+      int originalSizeBytes = 1024 * 1024;
 
       // When & Then
       assertThatExceptionOfType(IllegalArgumentException.class)
@@ -47,9 +47,9 @@ class ClaimCheckValueTest {
     }
 
     @ParameterizedTest
-    @ValueSource(longs = {-1L, -2L, -3L})
+    @ValueSource(ints = {-1, -2, -3})
     @DisplayName("originalSizeBytes를 0보다 낮게 설정하면 예외가 발생한다.")
-    void setOriginalSizeBytesZeroCauseException(long originalSizeBytes) { // Given
+    void setOriginalSizeBytesZeroCauseException(int originalSizeBytes) { // Given
       String referenceUrl = "s3://test-bucket/claim-checks";
 
       // When & Then

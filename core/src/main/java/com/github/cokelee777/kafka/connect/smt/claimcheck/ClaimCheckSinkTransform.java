@@ -19,6 +19,12 @@ import org.apache.kafka.connect.transforms.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SMT that restores original payloads from external storage using claim check references.
+ *
+ * <p>When a record contains a claim check header, the original payload is retrieved from external
+ * storage and the record value is restored.
+ */
 public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
 
   private static final Logger log = LoggerFactory.getLogger(ClaimCheckSinkTransform.class);
@@ -130,7 +136,7 @@ public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
 
   private byte[] retrieveOriginalRecord(ClaimCheckValue claimCheckValue) {
     String referenceUrl = claimCheckValue.getReferenceUrl();
-    long originalSizeBytes = claimCheckValue.getOriginalSizeBytes();
+    int originalSizeBytes = claimCheckValue.getOriginalSizeBytes();
 
     log.debug(
         "Recovering claim check record from: {}, original size: {} bytes",
@@ -143,7 +149,7 @@ public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
   }
 
   private void validateRetrievedPayload(
-      byte[] originalRecordBytes, String referenceUrl, long originalSizeBytes) {
+      byte[] originalRecordBytes, String referenceUrl, int originalSizeBytes) {
     if (originalRecordBytes == null) {
       throw new ConnectException("Failed to retrieve data from: " + referenceUrl);
     }

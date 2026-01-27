@@ -1,9 +1,9 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.defaultvalue.DefaultValueStrategy;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.defaultvalue.DefaultValueStrategySelector;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckValue;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategy;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategyResolver;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageFactory;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
@@ -19,6 +19,14 @@ import org.apache.kafka.connect.transforms.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SMT that offloads large payloads to external storage and replaces them with a claim check
+ * reference.
+ *
+ * <p>When a record exceeds the configured threshold, its payload is stored externally (e.g., S3)
+ * and the record value is replaced with a placeholder while the reference URL is added to the
+ * headers.
+ */
 public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
 
   private static final Logger log = LoggerFactory.getLogger(ClaimCheckSourceTransform.class);
@@ -29,7 +37,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     public static final String THRESHOLD_BYTES = "threshold.bytes";
 
     /** Default threshold: 1MB (1024 * 1024 bytes) */
-    private static final long DEFAULT_THRESHOLD_BYTES = 1024L * 1024L;
+    private static final int DEFAULT_THRESHOLD_BYTES = 1024 * 1024;
 
     public static final ConfigDef DEFINITION =
         new ConfigDef()
@@ -42,9 +50,9 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
                 "Storage implementation type")
             .define(
                 THRESHOLD_BYTES,
-                ConfigDef.Type.LONG,
+                ConfigDef.Type.INT,
                 DEFAULT_THRESHOLD_BYTES,
-                ConfigDef.Range.atLeast(1L),
+                ConfigDef.Range.atLeast(1),
                 ConfigDef.Importance.HIGH,
                 "Payload size threshold in bytes");
 
@@ -58,10 +66,9 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
   }
 
   private String storageType;
-  private long thresholdBytes;
+  private int thresholdBytes;
   private ClaimCheckStorage storage;
   private RecordSerializer recordSerializer;
-  private DefaultValueStrategySelector defaultValueStrategySelector;
 
   public ClaimCheckSourceTransform() {}
 
@@ -90,7 +97,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     return recordSerializer;
   }
 
-  public long getThresholdBytes() {
+  public int getThresholdBytes() {
     return this.thresholdBytes;
   }
 
@@ -98,7 +105,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
   public void configure(Map<String, ?> configs) {
     TransformConfig config = new TransformConfig(configs);
 
-    this.thresholdBytes = config.getLong(Config.THRESHOLD_BYTES);
+    this.thresholdBytes = config.getInt(Config.THRESHOLD_BYTES);
     this.storageType = config.getString(Config.STORAGE_TYPE);
 
     if (this.storage == null) {
@@ -111,8 +118,6 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
       this.recordSerializer = RecordSerializerFactory.create();
     }
     Objects.requireNonNull(this.recordSerializer, "RecordSerializer not configured");
-
-    this.defaultValueStrategySelector = new DefaultValueStrategySelector();
   }
 
   @Override
@@ -145,8 +150,8 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
   private SourceRecord createClaimCheckRecord(SourceRecord record, byte[] originalRecordBytes) {
     String referenceUrl = storeOriginalRecord(originalRecordBytes);
     Struct claimCheckValue = createClaimCheckValue(referenceUrl, originalRecordBytes.length);
-    Object defaultValue = createDefaultValue(record);
-    return buildClaimCheckRecord(record, claimCheckValue, defaultValue);
+    Object placeholder = createPlaceholder(record);
+    return buildClaimCheckRecord(record, claimCheckValue, placeholder);
   }
 
   private String storeOriginalRecord(byte[] originalRecordBytes) {
@@ -162,17 +167,17 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     return ClaimCheckValue.create(referenceUrl, originalSizeBytes).toStruct();
   }
 
-  private Object createDefaultValue(SourceRecord record) {
-    DefaultValueStrategy strategy = this.defaultValueStrategySelector.selectStrategy(record);
+  private Object createPlaceholder(SourceRecord record) {
+    PlaceholderStrategy strategy = PlaceholderStrategyResolver.resolve(record);
     log.debug(
-        "Applying default value with strategy: '{}' for topic: '{}'",
+        "Applying placeholder with strategy: '{}' for topic: '{}'",
         strategy.getStrategyType(),
         record.topic());
-    return strategy.createDefaultValue(record);
+    return strategy.apply(record);
   }
 
   private SourceRecord buildClaimCheckRecord(
-      SourceRecord record, Struct claimCheckValue, Object defaultValue) {
+      SourceRecord record, Struct claimCheckValue, Object placeholder) {
     SourceRecord sourceRecord =
         record.newRecord(
             record.topic(),
@@ -180,7 +185,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
             record.keySchema(),
             record.key(),
             record.valueSchema(),
-            defaultValue,
+            placeholder,
             record.timestamp());
 
     sourceRecord.headers().add(ClaimCheckSchema.NAME, claimCheckValue, ClaimCheckSchema.SCHEMA);

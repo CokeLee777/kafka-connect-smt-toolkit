@@ -129,7 +129,7 @@ class S3ClaimCheckE2EFlowTest {
       /** Given: Source */
       // ClaimCheckSourceTransform config
       Map<String, Object> sourceTransformConfig = new HashMap<>(commonConfig);
-      sourceTransformConfig.put(ClaimCheckSourceTransform.Config.THRESHOLD_BYTES, 1L);
+      sourceTransformConfig.put(ClaimCheckSourceTransform.Config.THRESHOLD_BYTES, 1);
       sourceTransformConfig.put(
           ClaimCheckSourceTransform.Config.STORAGE_TYPE, ClaimCheckStorageType.S3.type());
       sourceTransform.configure(sourceTransformConfig);
@@ -297,7 +297,7 @@ class S3ClaimCheckE2EFlowTest {
       Map<String, Object> sourceConfig = new HashMap<>();
       sourceConfig.put(
           ClaimCheckSourceTransform.Config.STORAGE_TYPE, ClaimCheckStorageType.S3.type());
-      sourceConfig.put(ClaimCheckSourceTransform.Config.THRESHOLD_BYTES, 1L);
+      sourceConfig.put(ClaimCheckSourceTransform.Config.THRESHOLD_BYTES, 1);
       sourceConfig.put(S3Storage.Config.BUCKET_NAME, BUCKET_NAME);
       sourceConfig.put(S3Storage.Config.REGION, localstack.getRegion());
       sourceConfig.put(
@@ -328,7 +328,7 @@ class S3ClaimCheckE2EFlowTest {
   private Map<String, Object> generateSourceConfigWithToxiproxy(int retryMax) {
     Map<String, Object> config = new HashMap<>();
     config.put(ClaimCheckSourceTransform.Config.STORAGE_TYPE, ClaimCheckStorageType.S3.type());
-    config.put(ClaimCheckSourceTransform.Config.THRESHOLD_BYTES, 1L);
+    config.put(ClaimCheckSourceTransform.Config.THRESHOLD_BYTES, 1);
     config.put(S3Storage.Config.BUCKET_NAME, BUCKET_NAME);
     config.put(S3Storage.Config.REGION, localstack.getRegion());
     config.put(S3Storage.Config.ENDPOINT_OVERRIDE, getProxiedEndpoint());
@@ -401,9 +401,9 @@ class S3ClaimCheckE2EFlowTest {
 
     // 실제 데이터 검증
     ClaimCheckValue claimCheckValue =
-        ClaimCheckValue.from((Struct) transformedSourceHeader.value());
+        ClaimCheckValue.from(transformedSourceHeader.value());
     String referenceUrl = claimCheckValue.getReferenceUrl();
-    long originalSizeBytes = claimCheckValue.getOriginalSizeBytes();
+    int originalSizeBytes = claimCheckValue.getOriginalSizeBytes();
 
     assertThat(referenceUrl).startsWith("s3://" + BUCKET_NAME + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);
