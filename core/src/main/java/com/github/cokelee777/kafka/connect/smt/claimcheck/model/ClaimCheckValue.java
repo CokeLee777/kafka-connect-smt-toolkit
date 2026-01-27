@@ -130,7 +130,7 @@ public class ClaimCheckValue {
     if (!(referenceUrlObj instanceof String)) {
       throw new ConnectException(
           "Invalid type for '"
-              + ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES
+              + ClaimCheckSchemaFields.REFERENCE_URL
               + "': expected String, got "
               + referenceUrlObj.getClass().getSimpleName());
     }
@@ -155,35 +155,40 @@ public class ClaimCheckValue {
   }
 
   private static int parseInteger(Object value, String fieldName) {
-    if (value instanceof Number) {
-      return ((Number) value).intValue();
+    if (value instanceof Integer) {
+      return (Integer) value;
     }
-    try {
-      return Integer.parseInt(value.toString());
-    } catch (NumberFormatException e) {
-      throw new ConnectException(
-          "Invalid type for '"
-              + fieldName
-              + "': expected Integer, got "
-              + value.getClass().getSimpleName(),
-          e);
+
+    if (value instanceof Long) {
+      long longValue = (Long) value;
+      if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
+        throw new ConnectException(
+            "Value out of Integer range for '" + fieldName + "': " + longValue);
+      }
+      return (int) longValue;
     }
+
+    throw new ConnectException(
+        "Invalid type for '"
+            + fieldName
+            + "': expected Integer, got "
+            + value.getClass().getSimpleName());
   }
 
   private static long parseLong(Object value, String fieldName) {
-    if (value instanceof Number) {
-      return ((Number) value).longValue();
+    if (value instanceof Long) {
+      return (Long) value;
     }
-    try {
-      return Long.parseLong(value.toString());
-    } catch (NumberFormatException e) {
-      throw new ConnectException(
-          "Invalid type for '"
-              + fieldName
-              + "': expected Long, got "
-              + value.getClass().getSimpleName(),
-          e);
+
+    if (value instanceof Integer) {
+      return ((Integer) value).longValue();
     }
+
+    throw new ConnectException(
+        "Invalid type for '"
+            + fieldName
+            + "': expected Long, got "
+            + value.getClass().getSimpleName());
   }
 
   private static ClaimCheckValue fromJson(String value) {
