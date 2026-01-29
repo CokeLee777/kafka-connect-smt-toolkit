@@ -81,6 +81,31 @@ publishing {
             groupId = group
             artifactId = 'kafka-connect-smt-toolkit'
             version = version
+
+            pom {
+                name = 'kafka-connect-smt-toolkit'
+                description = 'A toolkit of Single Message Transforms (SMTs) for Kafka Connect.'
+                url = 'https://github.com/cokelee777/kafka-connect-smt-toolkit'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'cokelee777'
+                        name = 'cokelee777'
+                        email = 'akak640@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/cokelee777/kafka-connect-smt-toolkit.git'
+                    developerConnection = 'scm:git:ssh://github.com/cokelee777/kafka-connect-smt-toolkit.git'
+                    url = 'https://github.com/cokelee777/kafka-connect-smt-toolkit'
+                }
+            }
         }
     }
 
