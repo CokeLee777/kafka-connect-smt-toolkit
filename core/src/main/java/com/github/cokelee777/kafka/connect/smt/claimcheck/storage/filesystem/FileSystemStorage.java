@@ -79,8 +79,7 @@ public class FileSystemStorage implements ClaimCheckStorage {
         throw new ConfigException("Storage directory is not writable: " + this.storagePath);
       }
     } catch (IOException e) {
-      throw new ConfigException(
-          "Failed to create storage directory: " + this.storagePath, e);
+      throw new ConfigException("Failed to create storage directory: " + this.storagePath, e);
     }
   }
 
@@ -95,8 +94,7 @@ public class FileSystemStorage implements ClaimCheckStorage {
       Files.write(filePath, payload);
       return buildReferenceUrl(filePath);
     } catch (IOException e) {
-      throw new RuntimeException(
-          "Failed to write claim check file: " + filePath, e);
+      throw new RuntimeException("Failed to write claim check file: " + filePath, e);
     }
   }
 
@@ -118,8 +116,7 @@ public class FileSystemStorage implements ClaimCheckStorage {
     try {
       return Files.readAllBytes(filePath);
     } catch (IOException e) {
-      throw new RuntimeException(
-          "Failed to read claim check file: " + filePath, e);
+      throw new RuntimeException("Failed to read claim check file: " + filePath, e);
     }
   }
 
