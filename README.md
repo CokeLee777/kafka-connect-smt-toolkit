@@ -7,7 +7,7 @@ collection of reusable SMTs designed to enhance data processing capabilities wit
 
 ### Core Technologies
 
-- **Java 11** - Target and source compatibility
+- **Java 17** - Target and source compatibility
 - **Kafka Connect API 3.8.1** - Core framework for building connectors and SMTs
 - **Gradle 8.11** - Build automation with Shadow plugin for uber JAR packaging
 
@@ -67,10 +67,10 @@ structured data using Kafka Connect's `Schema` and `Struct` API.
 
 **Tested Environment:**
 
-- ✅ **Confluent Platform 7.6.1** (includes Apache Kafka 3.6.x) - Verified
+- ✅ **Confluent Platform 7.8.0** (includes Apache Kafka 3.6.x) - Verified
 - ✅ Built against **Kafka Connect API 3.8.1** for forward compatibility
 
-> **Note:** The SMT is built against Kafka Connect API 3.8.1 but tested on Confluent Platform 7.6.1 (Kafka 3.6.x). The
+> **Note:** The SMT is built against Kafka Connect API 3.8.1 but tested on Confluent Platform 7.8.0 (Kafka 3.6.x). The
 > backward compatibility of Connect API allows newer builds to work on older runtime versions.
 
 **Technical Requirements:**

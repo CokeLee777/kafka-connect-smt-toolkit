@@ -2,11 +2,11 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckValue;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategyResolver;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies.PlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageFactory;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.common.serialization.RecordSerializer;
 import com.github.cokelee777.kafka.connect.smt.common.serialization.RecordSerializerFactory;
 import java.util.Map;

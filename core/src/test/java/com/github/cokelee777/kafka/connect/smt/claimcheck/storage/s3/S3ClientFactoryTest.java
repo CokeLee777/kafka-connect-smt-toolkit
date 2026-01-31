@@ -2,6 +2,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
 import com.github.cokelee777.kafka.connect.smt.common.retry.RetryConfig;
 import java.io.Serializable;
 import java.time.Duration;
@@ -40,7 +41,7 @@ class S3ClientFactoryTest {
               S3Storage.Config.RETRY_MAX_BACKOFF_MS,
               20000L);
       SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
-      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
+      S3ClientConfig s3ClientConfig = S3Storage.Config.toS3ClientConfig(config);
 
       // When
       try (S3Client s3Client = s3ClientFactory.create(s3ClientConfig)) {
@@ -68,7 +69,7 @@ class S3ClientFactoryTest {
               S3Storage.Config.RETRY_MAX_BACKOFF_MS,
               20000L);
       SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
-      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
+      S3ClientConfig s3ClientConfig = S3Storage.Config.toS3ClientConfig(config);
 
       // When
       try (S3Client s3Client = s3ClientFactory.create(s3ClientConfig)) {
@@ -99,7 +100,7 @@ class S3ClientFactoryTest {
               S3Storage.Config.RETRY_MAX_BACKOFF_MS,
               20000L);
       SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
-      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
+      S3ClientConfig s3ClientConfig = S3Storage.Config.toS3ClientConfig(config);
 
       // When
       ClientOverrideConfiguration clientOverrideConfiguration =

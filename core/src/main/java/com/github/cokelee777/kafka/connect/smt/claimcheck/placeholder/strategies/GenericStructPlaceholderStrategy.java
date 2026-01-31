@@ -1,6 +1,5 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategyType;
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -11,7 +10,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GenericStructPlaceholderStrategy implements PlaceholderStrategy {
+public final class GenericStructPlaceholderStrategy implements PlaceholderStrategy {
 
   private static final Logger log = LoggerFactory.getLogger(GenericStructPlaceholderStrategy.class);
 

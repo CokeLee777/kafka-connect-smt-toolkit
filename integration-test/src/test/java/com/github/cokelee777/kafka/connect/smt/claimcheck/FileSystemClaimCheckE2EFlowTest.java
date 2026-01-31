@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckValue;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.filesystem.FileSystemStorage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.FileSystemStorage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -164,8 +164,8 @@ class FileSystemClaimCheckE2EFlowTest {
 
     // 실제 데이터 검증
     ClaimCheckValue claimCheckValue = ClaimCheckValue.from(transformedSourceHeader.value());
-    String referenceUrl = claimCheckValue.getReferenceUrl();
-    int originalSizeBytes = claimCheckValue.getOriginalSizeBytes();
+    String referenceUrl = claimCheckValue.referenceUrl();
+    int originalSizeBytes = claimCheckValue.originalSizeBytes();
 
     assertThat(referenceUrl).startsWith("file://" + tempDirPath.toRealPath() + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);

@@ -1,0 +1,2 @@
+com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSourceTransform
+com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSinkTransform

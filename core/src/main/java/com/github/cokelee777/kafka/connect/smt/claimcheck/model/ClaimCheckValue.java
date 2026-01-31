@@ -9,28 +9,22 @@ import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.errors.DataException;
 
 /** Value object representing claim check metadata stored in record headers. */
-public class ClaimCheckValue {
+public record ClaimCheckValue(String referenceUrl, int originalSizeBytes, long uploadedAt) {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  private final String referenceUrl;
-  private final int originalSizeBytes;
-  private final long uploadedAt;
+  public ClaimCheckValue {
+    if (referenceUrl == null || referenceUrl.isBlank()) {
+      throw new IllegalArgumentException("referenceUrl must be non-blank");
+    }
 
-  private ClaimCheckValue(String referenceUrl, int originalSizeBytes, long uploadedAt) {
-    this.referenceUrl = referenceUrl;
-    this.originalSizeBytes = originalSizeBytes;
-    this.uploadedAt = uploadedAt;
-  }
+    if (originalSizeBytes < 0) {
+      throw new IllegalArgumentException("originalSizeBytes must be >= 0");
+    }
 
-  /** Returns the external storage reference URL. */
-  public String getReferenceUrl() {
-    return referenceUrl;
-  }
-
-  /** Returns the original payload size in bytes. */
-  public int getOriginalSizeBytes() {
-    return originalSizeBytes;
+    if (uploadedAt <= 0) {
+      throw new IllegalArgumentException("uploadedAt must be positive epoch millis");
+    }
   }
 
   /**
@@ -41,14 +35,6 @@ public class ClaimCheckValue {
    * @return a new ClaimCheckValue instance
    */
   public static ClaimCheckValue create(String referenceUrl, int originalSizeBytes) {
-    if (referenceUrl == null || referenceUrl.isBlank()) {
-      throw new IllegalArgumentException("referenceUrl must be non-blank");
-    }
-
-    if (originalSizeBytes < 0) {
-      throw new IllegalArgumentException("originalSizeBytes must be >= 0");
-    }
-
     return new ClaimCheckValue(referenceUrl, originalSizeBytes, Instant.now().toEpochMilli());
   }
 
@@ -68,16 +54,16 @@ public class ClaimCheckValue {
    * @throws ConnectException if the value type is unsupported
    */
   public static ClaimCheckValue from(Object value) {
-    if (value instanceof Struct) {
-      return from((Struct) value);
+    if (value == null) {
+      throw new ConnectException("Claim check value cannot be null");
     }
 
-    if (value instanceof Map) {
-      return from((Map<?, ?>) value);
-    }
-
-    if (value instanceof String) {
-      return fromJson((String) value);
+    if (value instanceof Struct structValue) {
+      return from(structValue);
+    } else if (value instanceof Map<?, ?> mapValue) {
+      return from(mapValue);
+    } else if (value instanceof String strValue) {
+      return fromJson(strValue);
     }
 
     throw new ConnectException("Unsupported claim check value type: " + value.getClass());
@@ -155,17 +141,20 @@ public class ClaimCheckValue {
   }
 
   private static int parseInteger(Object value, String fieldName) {
-    if (value instanceof Integer) {
-      return (Integer) value;
+    if (value instanceof Integer intValue) {
+      return intValue;
     }
 
-    if (value instanceof Long) {
-      long longValue = (Long) value;
+    if (value instanceof Long longValue) {
       if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
         throw new ConnectException(
             "Value out of Integer range for '" + fieldName + "': " + longValue);
       }
-      return (int) longValue;
+      return longValue.intValue();
+    }
+
+    if (value instanceof Short shortValue) {
+      return shortValue.intValue();
     }
 
     throw new ConnectException(
@@ -176,12 +165,12 @@ public class ClaimCheckValue {
   }
 
   private static long parseLong(Object value, String fieldName) {
-    if (value instanceof Long) {
-      return (Long) value;
+    if (value instanceof Long longValue) {
+      return longValue;
     }
 
-    if (value instanceof Integer) {
-      return ((Integer) value).longValue();
+    if (value instanceof Integer intValue) {
+      return intValue.longValue();
     }
 
     throw new ConnectException(

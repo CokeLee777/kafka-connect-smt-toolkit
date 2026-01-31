@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
+package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
 import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

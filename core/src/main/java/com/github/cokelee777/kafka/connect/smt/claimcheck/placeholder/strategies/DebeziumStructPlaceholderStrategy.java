@@ -1,6 +1,5 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategyType;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +10,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DebeziumStructPlaceholderStrategy implements PlaceholderStrategy {
+public final class DebeziumStructPlaceholderStrategy implements PlaceholderStrategy {
 
   private static final Logger log =
       LoggerFactory.getLogger(DebeziumStructPlaceholderStrategy.class);

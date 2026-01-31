@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.storage;
+package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type;
 
 import java.util.Map;
 
@@ -7,7 +7,8 @@ import java.util.Map;
  *
  * <p>Stores large payloads externally and returns a reference URL for retrieval.
  */
-public interface ClaimCheckStorage extends AutoCloseable {
+public sealed interface ClaimCheckStorage extends AutoCloseable
+    permits FileSystemStorage, S3Storage {
 
   /**
    * Returns the storage type identifier.

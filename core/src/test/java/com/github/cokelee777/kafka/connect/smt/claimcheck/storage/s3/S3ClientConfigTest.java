@@ -1,10 +1,11 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.io.Serializable;
 import java.util.Map;
+
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -36,15 +37,15 @@ class S3ClientConfigTest {
       SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
 
       // When
-      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
+      S3ClientConfig s3ClientConfig = S3Storage.Config.toS3ClientConfig(config);
 
       // Then
       assertThat(s3ClientConfig).isNotNull();
-      assertThat(s3ClientConfig.getRegion()).isEqualTo("ap-northeast-2");
-      assertThat(s3ClientConfig.getEndpointOverride()).isNull();
-      assertThat(s3ClientConfig.getRetryMax()).isEqualTo(3);
-      assertThat(s3ClientConfig.getRetryBackoffMs()).isEqualTo(300L);
-      assertThat(s3ClientConfig.getRetryMaxBackoffMs()).isEqualTo(20000L);
+      assertThat(s3ClientConfig.region()).isEqualTo("ap-northeast-2");
+      assertThat(s3ClientConfig.endpointOverride()).isNull();
+      assertThat(s3ClientConfig.retryMax()).isEqualTo(3);
+      assertThat(s3ClientConfig.retryBackoffMs()).isEqualTo(300L);
+      assertThat(s3ClientConfig.retryMaxBackoffMs()).isEqualTo(20000L);
     }
 
     @Test
@@ -68,15 +69,15 @@ class S3ClientConfigTest {
       SimpleConfig config = new SimpleConfig(S3Storage.Config.DEFINITION, originals);
 
       // When
-      S3ClientConfig s3ClientConfig = S3ClientConfig.from(config);
+      S3ClientConfig s3ClientConfig = S3Storage.Config.toS3ClientConfig(config);
 
       // Then
       assertThat(s3ClientConfig).isNotNull();
-      assertThat(s3ClientConfig.getRegion()).isEqualTo("ap-northeast-2");
-      assertThat(s3ClientConfig.getEndpointOverride()).isEqualTo("http://localhost:4566");
-      assertThat(s3ClientConfig.getRetryMax()).isEqualTo(3);
-      assertThat(s3ClientConfig.getRetryBackoffMs()).isEqualTo(300L);
-      assertThat(s3ClientConfig.getRetryMaxBackoffMs()).isEqualTo(20000L);
+      assertThat(s3ClientConfig.region()).isEqualTo("ap-northeast-2");
+      assertThat(s3ClientConfig.endpointOverride()).isEqualTo("http://localhost:4566");
+      assertThat(s3ClientConfig.retryMax()).isEqualTo(3);
+      assertThat(s3ClientConfig.retryBackoffMs()).isEqualTo(300L);
+      assertThat(s3ClientConfig.retryMaxBackoffMs()).isEqualTo(20000L);
     }
   }
 }

@@ -1,7 +1,8 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.filesystem.FileSystemStorage;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.ClaimCheckStorage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.FileSystemStorage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;

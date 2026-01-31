@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies.PlaceholderStrategy;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;

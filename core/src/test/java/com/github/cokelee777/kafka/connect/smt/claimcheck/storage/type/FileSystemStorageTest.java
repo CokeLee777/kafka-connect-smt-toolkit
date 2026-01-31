@@ -1,4 +1,4 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.filesystem;
+package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+
 import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;

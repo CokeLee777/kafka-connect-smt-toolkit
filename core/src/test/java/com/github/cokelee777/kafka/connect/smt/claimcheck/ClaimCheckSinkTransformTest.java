@@ -7,9 +7,8 @@ import static org.mockito.Mockito.*;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchemaFields;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ClaimCheckSinkTransformTest {
 
   @InjectMocks private ClaimCheckSinkTransform transform;
-  @Mock private ClaimCheckStorage storage;
+  @Mock private S3Storage storage;
 
   @Nested
   @DisplayName("configure 메서드 테스트")

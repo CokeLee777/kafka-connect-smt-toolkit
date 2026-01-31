@@ -2,6 +2,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies.DebeziumStructPlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies.GenericStructPlaceholderStrategy;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies.PlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies.SchemalessPlaceholderStrategy;
 import java.util.List;
 import org.apache.kafka.connect.data.Schema;

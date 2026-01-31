@@ -11,7 +11,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JsonRecordSerializer implements RecordSerializer {
+public final class JsonRecordSerializer implements RecordSerializer {
 
   private static final Logger log = LoggerFactory.getLogger(JsonRecordSerializer.class);
 
@@ -74,12 +74,12 @@ public class JsonRecordSerializer implements RecordSerializer {
   private byte[] serializeWithSchemaless(SourceRecord record) {
     Object value = record.value();
 
-    if (value instanceof byte[]) {
-      return (byte[]) value;
+    if (value instanceof byte[] bytesValue) {
+      return bytesValue;
     }
 
-    if (value instanceof String) {
-      return ((String) value).getBytes(StandardCharsets.UTF_8);
+    if (value instanceof String strValue) {
+      return strValue.getBytes(StandardCharsets.UTF_8);
     }
 
     if (value instanceof Map<?, ?>) {

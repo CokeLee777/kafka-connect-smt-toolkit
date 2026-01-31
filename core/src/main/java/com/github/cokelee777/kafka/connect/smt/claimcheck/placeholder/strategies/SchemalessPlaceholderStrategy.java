@@ -1,13 +1,12 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.strategies;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategy;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.PlaceholderStrategyType;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SchemalessPlaceholderStrategy implements PlaceholderStrategy {
+public final class SchemalessPlaceholderStrategy implements PlaceholderStrategy {
 
   private static final Logger log = LoggerFactory.getLogger(SchemalessPlaceholderStrategy.class);
 

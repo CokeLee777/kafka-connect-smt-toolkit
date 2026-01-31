@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckValue;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
 import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 import eu.rekawek.toxiproxy.model.ToxicDirection;
@@ -402,8 +402,8 @@ class S3ClaimCheckE2EFlowTest {
     // 실제 데이터 검증
     ClaimCheckValue claimCheckValue =
         ClaimCheckValue.from(transformedSourceHeader.value());
-    String referenceUrl = claimCheckValue.getReferenceUrl();
-    int originalSizeBytes = claimCheckValue.getOriginalSizeBytes();
+    String referenceUrl = claimCheckValue.referenceUrl();
+    int originalSizeBytes = claimCheckValue.originalSizeBytes();
 
     assertThat(referenceUrl).startsWith("s3://" + BUCKET_NAME + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);

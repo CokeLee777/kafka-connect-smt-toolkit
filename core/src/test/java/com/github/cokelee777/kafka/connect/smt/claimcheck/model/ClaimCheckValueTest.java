@@ -29,8 +29,8 @@ class ClaimCheckValueTest {
 
       // Then
       assertThat(claimCheckValue).isNotNull();
-      assertThat(claimCheckValue.getReferenceUrl()).isEqualTo(referenceUrl);
-      assertThat(claimCheckValue.getOriginalSizeBytes()).isEqualTo(originalSizeBytes);
+      assertThat(claimCheckValue.referenceUrl()).isEqualTo(referenceUrl);
+      assertThat(claimCheckValue.originalSizeBytes()).isEqualTo(originalSizeBytes);
     }
 
     @ParameterizedTest

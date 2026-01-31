@@ -1,6 +1,5 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.filesystem;
+package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorage;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +18,7 @@ import org.apache.kafka.connect.transforms.util.SimpleConfig;
  * <p>Stores large payloads to a local or network-mounted file system (e.g., NAS, NFS, SMB) and
  * returns a file:// reference URL for retrieval.
  */
-public class FileSystemStorage implements ClaimCheckStorage {
+public final class FileSystemStorage implements ClaimCheckStorage {
 
   public static final class Config {
 

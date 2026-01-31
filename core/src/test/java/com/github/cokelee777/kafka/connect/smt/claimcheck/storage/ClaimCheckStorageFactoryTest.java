@@ -3,8 +3,9 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.filesystem.FileSystemStorage;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3.S3Storage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.FileSystemStorage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.ClaimCheckStorage;
 import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

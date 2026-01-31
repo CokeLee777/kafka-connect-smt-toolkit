@@ -4,7 +4,7 @@ import org.apache.kafka.connect.data.SchemaAndValue;
 import org.apache.kafka.connect.source.SourceRecord;
 
 /** Serializes and deserializes Kafka Connect records for external storage. */
-public interface RecordSerializer {
+public sealed interface RecordSerializer permits JsonRecordSerializer {
 
   /**
    * Returns the serializer type identifier.
