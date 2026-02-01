@@ -266,7 +266,7 @@ dependencies, if any) to a directory that is part of your Kafka Connect worker's
 For example:
 
 ```bash
-cp build/libs/kafka-connect-smt-toolkit-*.jar /path/to/your/kafka-connect/plugins/
+cp build/libs/kafka-connect-claim-check-smt-*.jar /path/to/your/kafka-connect/plugins/
 ```
 
 Remember to restart your Kafka Connect workers after adding the plugin.

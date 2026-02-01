@@ -1,4 +1,4 @@
-rootProject.name = 'kafka-connect-smt-toolkit'
+rootProject.name = 'kafka-connect-claim-check-smt'
 
 include 'core'
 include 'integration-test'

@@ -58,10 +58,10 @@ shadowJar {
         destDir.mkdirs()
     }
 
-    archiveBaseName.set("kafka-connect-smt-toolkit")
+    archiveBaseName.set("kafka-connect-claim-check-smt")
     archiveVersion.set(project.version.toString())
     archiveClassifier.set('')
-    destinationDirectory.set(layout.buildDirectory.dir("libs/kafka-connect-smt-toolkit").get().asFile)
+    destinationDirectory.set(layout.buildDirectory.dir("libs/kafka-connect-claim-check-smt").get().asFile)
 
     dependencies {
         exclude(dependency("org.apache.kafka:.*"))
@@ -79,13 +79,13 @@ publishing {
             artifact shadowJar
 
             groupId = group
-            artifactId = 'kafka-connect-smt-toolkit'
+            artifactId = 'kafka-connect-claim-check-smt'
             version = version
 
             pom {
-                name = 'kafka-connect-smt-toolkit'
+                name = 'kafka-connect-claim-check-smt'
                 description = 'A toolkit of Single Message Transforms (SMTs) for Kafka Connect.'
-                url = 'https://github.com/cokelee777/kafka-connect-smt-toolkit'
+                url = 'https://github.com/cokelee777/kafka-connect-claim-check-smt'
 
                 licenses {
                     license {
@@ -101,9 +101,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/cokelee777/kafka-connect-smt-toolkit.git'
-                    developerConnection = 'scm:git:ssh://github.com/cokelee777/kafka-connect-smt-toolkit.git'
-                    url = 'https://github.com/cokelee777/kafka-connect-smt-toolkit'
+                    connection = 'scm:git:git://github.com/cokelee777/kafka-connect-claim-check-smt.git'
+                    developerConnection = 'scm:git:ssh://github.com/cokelee777/kafka-connect-claim-check-smt.git'
+                    url = 'https://github.com/cokelee777/kafka-connect-claim-check-smt'
                 }
             }
         }
@@ -113,7 +113,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/cokelee777/kafka-connect-smt-toolkit")
+            url = uri("https://maven.pkg.github.com/cokelee777/kafka-connect-claim-check-smt")
 
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
