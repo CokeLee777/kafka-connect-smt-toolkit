@@ -8,7 +8,8 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileSystemClient {
+/** A client for interacting with the file system. */
+public final class FileSystemClient {
 
   private static final Logger log = LoggerFactory.getLogger(FileSystemClient.class);
 
@@ -16,12 +17,19 @@ public class FileSystemClient {
   private final long initialBackOffMs;
   private final long maxBackOffMs;
 
-  public FileSystemClient(RetryConfig retryConfig) {
+  FileSystemClient(RetryConfig retryConfig) {
     this.maxAttempts = retryConfig.maxAttempts();
     this.initialBackOffMs = retryConfig.initialBackoff().toMillis();
     this.maxBackOffMs = retryConfig.maxBackoff().toMillis();
   }
 
+  /**
+   * Writes a payload to a file.
+   *
+   * @param path the path to the file
+   * @param payload the payload to write
+   * @throws IOException if an I/O error occurs.
+   */
   public void write(Path path, byte[] payload) throws IOException {
     retryWithBackoff(
         () -> {
@@ -32,6 +40,13 @@ public class FileSystemClient {
         path);
   }
 
+  /**
+   * Reads a payload from a file.
+   *
+   * @param path the path to the file
+   * @return the payload
+   * @throws IOException if an I/O error occurs.
+   */
   public byte[] read(Path path) throws IOException {
     return retryWithBackoff(() -> Files.readAllBytes(path), "read", path);
   }
