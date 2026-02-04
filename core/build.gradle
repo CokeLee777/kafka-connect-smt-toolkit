@@ -84,7 +84,7 @@ publishing {
 
             pom {
                 name = 'kafka-connect-claim-check-smt'
-                description = 'A toolkit of Single Message Transforms (SMTs) for Kafka Connect.'
+                description = 'Kafka Connect SMT for implementing Claim Check pattern with multiple storage support'
                 url = 'https://github.com/cokelee777/kafka-connect-claim-check-smt'
 
                 licenses {
