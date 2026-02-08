@@ -12,7 +12,7 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class RecordValueRecordValuePlaceholderResolverTest {
+class RecordValuePlaceholderResolverTest {
 
   @Nested
   class ResolveTest {
