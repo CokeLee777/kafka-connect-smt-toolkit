@@ -8,6 +8,9 @@ import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigException;
 
+/**
+ * Configuration for File System Storage.
+ */
 public class FileSystemStorageConfig extends AbstractConfig {
 
   public static final String PATH_CONFIG = "storage.filesystem.path";

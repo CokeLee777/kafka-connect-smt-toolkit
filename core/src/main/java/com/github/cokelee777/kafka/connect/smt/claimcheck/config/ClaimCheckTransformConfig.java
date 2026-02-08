@@ -5,12 +5,20 @@ import java.util.Map;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 
+/**
+ * Common configuration for ClaimCheck transformations.
+ */
 public abstract class ClaimCheckTransformConfig extends AbstractConfig {
 
   public static final String STORAGE_TYPE_CONFIG = "storage.type";
   public static final String STORAGE_TYPE_DOC =
       "The type of storage implementation to use for the Claim Check pattern";
 
+  /**
+   * Create a new ConfigDef with common configurations.
+   *
+   * @return A ConfigDef object with common configurations.
+   */
   public static ConfigDef newConfigDef() {
     ConfigDef config = new ConfigDef();
     config.define(

@@ -3,6 +3,9 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.config;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 
+/**
+ * Configuration for the ClaimCheck Source Transformation.
+ */
 public class ClaimCheckSourceTransformConfig extends ClaimCheckTransformConfig {
 
   public static final String THRESHOLD_BYTES_CONFIG = "threshold.bytes";
