@@ -99,25 +99,23 @@ class FileSystemStorageTest {
     void shouldThrowExceptionWhenPathIsNotWritable() throws IOException {
       // Given
       File readOnlyDir = tempDir.resolve("read-only").toFile();
-      boolean created = readOnlyDir.mkdir();
-      Assumptions.assumeTrue(created, "Failed to create test directory");
-
-      boolean isReadOnly = readOnlyDir.setReadOnly();
-      Assumptions.assumeTrue(isReadOnly, "Failed to set read-only permission");
+      readOnlyDir.mkdir();
+      readOnlyDir.setReadOnly();
 
       Map<String, String> configs =
           FileSystemStorageTestConfigProvider.config(readOnlyDir.getAbsolutePath());
 
       // When & Then
-      assertThatExceptionOfType(ConfigException.class)
-          .isThrownBy(() -> fileSystemStorage.configure(configs))
-          .withMessage(
-              "Storage directory is not writable: "
-                  + readOnlyDir.toPath().toAbsolutePath().normalize().toRealPath());
-
-      // Clean up
-      boolean canWritable = readOnlyDir.setWritable(true);
-      Assumptions.assumeTrue(canWritable, "Failed to set write permission");
+      try {
+        assertThatExceptionOfType(ConfigException.class)
+            .isThrownBy(() -> fileSystemStorage.configure(configs))
+            .withMessage(
+                "Storage directory is not writable: "
+                    + readOnlyDir.toPath().toAbsolutePath().normalize().toRealPath());
+      } finally {
+        // Clean up
+        readOnlyDir.setWritable(true);
+      }
     }
   }
 
