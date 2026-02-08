@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 
 class SchemalessRecordValuePlaceholderTest {
 
-  private SchemalessRecordValuePlaceholder schemalessPlaceholderStrategy;
+  private SchemalessRecordValuePlaceholder placeholder;
 
   @BeforeEach
   void setUp() {
-    schemalessPlaceholderStrategy = new SchemalessRecordValuePlaceholder();
+    placeholder = new SchemalessRecordValuePlaceholder();
   }
 
   @Nested
@@ -28,7 +28,7 @@ class SchemalessRecordValuePlaceholderTest {
           new SourceRecord(null, null, "test-topic", Schema.BYTES_SCHEMA, "key", null, value);
 
       // When
-      Object defaultValue = schemalessPlaceholderStrategy.apply(record);
+      Object defaultValue = placeholder.apply(record);
 
       // Then
       assertThat(defaultValue).isNull();
@@ -44,7 +44,7 @@ class SchemalessRecordValuePlaceholderTest {
 
       // When & Then
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> schemalessPlaceholderStrategy.apply(record))
+          .isThrownBy(() -> placeholder.apply(record))
           .withMessage("Cannot handle record with non-null schema. Expected schemaless record.");
     }
   }

@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 
 class GenericStructRecordValuePlaceholderTest {
 
-  private GenericStructRecordValuePlaceholder genericStructPlaceholderStrategy;
+  private GenericStructRecordValuePlaceholder placeholder;
 
   @BeforeEach
   void setUp() {
-    genericStructPlaceholderStrategy = new GenericStructRecordValuePlaceholder();
+    placeholder = new GenericStructRecordValuePlaceholder();
   }
 
   @Nested
@@ -51,7 +51,7 @@ class GenericStructRecordValuePlaceholderTest {
               null, null, "test-topic", Schema.BYTES_SCHEMA, "key", valueSchema, value);
 
       // When
-      Object defaultValue = genericStructPlaceholderStrategy.apply(record);
+      Object defaultValue = placeholder.apply(record);
 
       // Then
       assertThat(defaultValue).isNotNull();

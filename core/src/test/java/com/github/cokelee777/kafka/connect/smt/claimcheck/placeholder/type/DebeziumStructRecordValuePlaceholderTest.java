@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 
 class DebeziumStructRecordValuePlaceholderTest {
 
-  private DebeziumStructRecordValuePlaceholder debeziumStructPlaceholderStrategy;
+  private DebeziumStructRecordValuePlaceholder placeholder;
 
   @BeforeEach
   void setUp() {
-    debeziumStructPlaceholderStrategy = new DebeziumStructRecordValuePlaceholder();
+    placeholder = new DebeziumStructRecordValuePlaceholder();
   }
 
   @Nested
@@ -55,7 +55,7 @@ class DebeziumStructRecordValuePlaceholderTest {
               null, null, "test-topic", Schema.BYTES_SCHEMA, "key", envelopeSchema, envelope);
 
       // When
-      Object defaultValue = debeziumStructPlaceholderStrategy.apply(record);
+      Object defaultValue = placeholder.apply(record);
 
       // Then
       assertThat(defaultValue).isNotNull();
@@ -82,7 +82,7 @@ class DebeziumStructRecordValuePlaceholderTest {
 
       // When & Then
       assertThatExceptionOfType(IllegalArgumentException.class)
-          .isThrownBy(() -> debeziumStructPlaceholderStrategy.apply(record))
+          .isThrownBy(() -> placeholder.apply(record))
           .withMessage(
               String.format(
                   "Cannot handle record. Expected Debezium STRUCT schema. "

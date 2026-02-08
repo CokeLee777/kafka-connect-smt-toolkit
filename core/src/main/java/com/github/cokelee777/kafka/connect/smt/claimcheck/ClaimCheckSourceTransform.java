@@ -116,7 +116,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     RecordValuePlaceholder strategy = RecordValuePlaceholderResolver.resolve(record);
     log.debug(
         "Applying placeholder with strategy: '{}' for topic: '{}'",
-        strategy.getStrategyType(),
+        strategy.getPlaceholderType(),
         record.topic());
     return strategy.apply(record);
   }

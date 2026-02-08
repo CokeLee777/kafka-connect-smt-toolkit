@@ -53,7 +53,7 @@ class RecordValuePlaceholderResolverTest {
 
       // Then
       assertThat(strategy).isNotNull();
-      assertThat(strategy.getStrategyType())
+      assertThat(strategy.getPlaceholderType())
           .isEqualTo(RecordValuePlaceholderType.DEBEZIUM_STRUCT.type());
     }
 
@@ -76,7 +76,7 @@ class RecordValuePlaceholderResolverTest {
 
       // Then
       assertThat(strategy).isNotNull();
-      assertThat(strategy.getStrategyType())
+      assertThat(strategy.getPlaceholderType())
           .isEqualTo(RecordValuePlaceholderType.GENERIC_STRUCT.type());
     }
 
@@ -94,7 +94,7 @@ class RecordValuePlaceholderResolverTest {
 
       // Then
       assertThat(strategy).isNotNull();
-      assertThat(strategy.getStrategyType())
+      assertThat(strategy.getPlaceholderType())
           .isEqualTo(RecordValuePlaceholderType.SCHEMALESS.type());
     }
 

@@ -16,24 +16,24 @@ public sealed interface RecordValuePlaceholder
         SchemalessRecordValuePlaceholder {
 
   /**
-   * Returns the strategy type identifier.
+   * Returns the placeholder type identifier.
    *
-   * @return the strategy type name
+   * @return the placeholder type name
    */
-  String getStrategyType();
+  String getPlaceholderType();
 
   /**
-   * Returns the schema type this strategy supports.
+   * Returns the schema type this placeholder supports.
    *
    * @return the supported schema type, or {@code null} for schemaless records
    */
   Schema.Type getSupportedSchemaType();
 
   /**
-   * Checks if this strategy can handle the given record.
+   * Checks if this placeholder can handle the given record.
    *
    * @param record the record to check
-   * @return {@code true} if this strategy can handle the record
+   * @return {@code true} if this placeholder can handle the record
    */
   boolean canHandle(SourceRecord record);
 

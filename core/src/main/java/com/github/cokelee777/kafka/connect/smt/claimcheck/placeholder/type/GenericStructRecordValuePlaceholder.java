@@ -10,13 +10,21 @@ import org.apache.kafka.connect.source.SourceRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@link RecordValuePlaceholder} implementation for generic {@link Struct} records.
+ *
+ * <p>This strategy generates a placeholder {@link Struct} by replacing all fields
+ * with their default values (if defined in the schema), or a sensible default for the field type.
+ * For complex types (Struct, Array, Map), it recursively applies default values.
+ * This is used for {@link Struct} records that are not specifically identified as Debezium records.
+ */
 public final class GenericStructRecordValuePlaceholder implements RecordValuePlaceholder {
 
   private static final Logger log =
       LoggerFactory.getLogger(GenericStructRecordValuePlaceholder.class);
 
   @Override
-  public String getStrategyType() {
+  public String getPlaceholderType() {
     return RecordValuePlaceholderType.GENERIC_STRUCT.type();
   }
 
