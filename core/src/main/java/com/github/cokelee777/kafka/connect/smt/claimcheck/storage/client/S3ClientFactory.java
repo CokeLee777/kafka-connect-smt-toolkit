@@ -4,10 +4,8 @@ import com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.S3Stora
 import com.github.cokelee777.kafka.connect.smt.common.retry.RetryConfig;
 import java.net.URI;
 import java.time.Duration;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
-import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.retries.StandardRetryStrategy;
@@ -29,13 +27,10 @@ public class S3ClientFactory {
    * @return a configured S3Client instance
    */
   public static S3Client create(S3StorageConfig config) {
-    SdkHttpClient httpClient = ApacheHttpClient.builder().build();
-    AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
-
     S3ClientBuilder builder =
         S3Client.builder()
-            .httpClient(httpClient)
-            .credentialsProvider(credentialsProvider)
+            .httpClientBuilder(ApacheHttpClient.builder())
+            .credentialsProvider(DefaultCredentialsProvider.builder().build())
             .overrideConfiguration(createOverrideConfiguration(config))
             .region(Region.of(config.getRegion()));
 
