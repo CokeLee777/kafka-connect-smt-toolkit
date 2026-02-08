@@ -64,12 +64,15 @@ class FileSystemStorageTest {
       fileSystemStorage.configure(configs);
 
       // Then
-      Path normalizedAbsolutePath = Path.of(FileSystemStorageConfig.PATH_DEFAULT).toAbsolutePath().normalize();
-      Files.createDirectories(normalizedAbsolutePath);
       assertThat(fileSystemStorage.getConfig().getPath())
-              .isEqualTo(FileSystemStorageConfig.PATH_DEFAULT);
-      assertThat(fileSystemStorage.getConfig().getNormalizedAbsolutePath()).isEqualTo(normalizedAbsolutePath);
-      assertThat(fileSystemStorage.getConfig().getRealPath()).isEqualTo(normalizedAbsolutePath.toRealPath());
+          .isEqualTo(FileSystemStorageConfig.PATH_DEFAULT);
+
+      Path path = Path.of(FileSystemStorageConfig.PATH_DEFAULT);
+      Path normalizedPath = path.toAbsolutePath().normalize();
+      assertThat(fileSystemStorage.getConfig().getNormalizedAbsolutePath())
+          .isEqualTo(normalizedPath);
+      assertThat(fileSystemStorage.getConfig().getRealPath())
+          .isEqualTo(normalizedPath.toRealPath());
 
       assertThat(fileSystemStorage.getConfig().getRetryMax())
           .isEqualTo(FileSystemStorageConfig.RETRY_MAX_DEFAULT);
