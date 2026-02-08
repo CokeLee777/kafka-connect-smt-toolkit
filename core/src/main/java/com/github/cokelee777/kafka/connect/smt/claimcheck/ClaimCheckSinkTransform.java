@@ -50,15 +50,15 @@ public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
   public void configure(Map<String, ?> configs) {
     config = new ClaimCheckSinkTransformConfig(configs);
 
+    // Allow test injection of storage
     if (storage == null) {
-      storage = ClaimCheckStorageFactory.create(config.getStorageType());
+      String storageType = config.getStorageType();
+      storage = ClaimCheckStorageFactory.create(storageType);
     }
     Objects.requireNonNull(storage, "ClaimCheckStorage not configured");
     storage.configure(configs);
 
-    if (recordSerializer == null) {
-      recordSerializer = RecordSerializerFactory.create();
-    }
+    recordSerializer = RecordSerializerFactory.create();
     Objects.requireNonNull(recordSerializer, "RecordSerializer not configured");
   }
 

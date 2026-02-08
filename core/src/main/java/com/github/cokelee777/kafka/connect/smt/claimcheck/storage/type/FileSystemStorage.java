@@ -40,6 +40,7 @@ public final class FileSystemStorage implements ClaimCheckStorage {
     config = new FileSystemStorageConfig(configs);
     validateStorageDirectoryExists(config.getNormalizedAbsolutePath());
 
+    // Allow test injection of fileSystemClient
     if (fileSystemClient == null) {
       fileSystemClient = FileSystemClientFactory.create(config);
     }

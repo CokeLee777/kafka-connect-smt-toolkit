@@ -34,6 +34,8 @@ public final class S3Storage implements ClaimCheckStorage {
   @Override
   public void configure(Map<String, ?> configs) {
     config = new S3StorageConfig(configs);
+
+    // Allow test injection of s3Client
     if (s3Client == null) {
       s3Client = S3ClientFactory.create(config);
     }
