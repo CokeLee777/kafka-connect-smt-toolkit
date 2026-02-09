@@ -144,8 +144,12 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
 
   @Override
   public void close() {
-    if (storage != null) {
-      storage.close();
+    if (storage != null && storage instanceof AutoCloseable closeableStorage) {
+      try {
+        closeableStorage.close();
+      } catch (Exception e) {
+        log.warn("Failed to close storage", e);
+      }
     }
   }
 }
