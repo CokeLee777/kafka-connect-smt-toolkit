@@ -158,6 +158,9 @@ public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
     if (storage != null && storage instanceof AutoCloseable closeableStorage) {
       try {
         closeableStorage.close();
+      } catch (InterruptedException e) {
+        log.warn("Closing storage was interrupted", e);
+        Thread.currentThread().interrupt();
       } catch (Exception e) {
         log.warn("Failed to close storage", e);
       }
