@@ -24,7 +24,7 @@ public class RecordValuePlaceholderResolver {
    * @param record the source record to resolve a strategy for
    * @return the matching strategy
    * @throws DataException if record is null
-   * @throws DataException if no strategy can handle the record
+   * @throws IllegalStateException if no strategy can handle the record (indicates misconfiguration)
    */
   public static RecordValuePlaceholder resolve(SourceRecord record) {
     if (record == null) {
@@ -42,9 +42,9 @@ public class RecordValuePlaceholderResolver {
       }
     }
 
-    throw new DataException(
-        "No placeholder resolution strategy found for schema: "
+    throw new IllegalStateException(
+        "No placeholder strategy matched for schema: "
             + schema
-            + ". This usually indicates an unsupported record schema for claim check processing.");
+            + ". This indicates PLACEHOLDERS list is misconfigured.");
   }
 }
