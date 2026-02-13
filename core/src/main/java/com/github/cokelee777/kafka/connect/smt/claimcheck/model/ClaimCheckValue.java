@@ -178,8 +178,6 @@ public record ClaimCheckValue(String referenceUrl, int originalSizeBytes, long u
     try {
       JsonNode node = OBJECT_MAPPER.readTree(value);
       return from(node);
-    } catch (DataException e) {
-      throw e;
     } catch (Exception e) {
       throw new DataException("Failed to parse claim check JSON", e);
     }
