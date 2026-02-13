@@ -40,7 +40,7 @@ public class RecordValuePlaceholderResolver {
     Schema schema = record.valueSchema();
     for (RecordValuePlaceholder strategy : STRATEGIES) {
       if (strategy.canHandle(record)) {
-        log.debug("Resolved strategy: {} for schema: {}", strategy.getPlaceholderType(), schema);
+        log.debug("Resolved strategy: {} for schema: {}", strategy.getClass().getSimpleName(), schema);
         return strategy;
       }
     }

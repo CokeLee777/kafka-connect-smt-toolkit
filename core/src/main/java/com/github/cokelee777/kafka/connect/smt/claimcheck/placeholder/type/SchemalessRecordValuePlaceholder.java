@@ -19,16 +19,6 @@ public final class SchemalessRecordValuePlaceholder implements RecordValuePlaceh
   private static final Logger log = LoggerFactory.getLogger(SchemalessRecordValuePlaceholder.class);
 
   @Override
-  public String getPlaceholderType() {
-    return RecordValuePlaceholderType.SCHEMALESS.type();
-  }
-
-  @Override
-  public Schema.Type getSupportedSchemaType() {
-    return null;
-  }
-
-  @Override
   public boolean canHandle(SourceRecord record) {
     return record.valueSchema() == null;
   }

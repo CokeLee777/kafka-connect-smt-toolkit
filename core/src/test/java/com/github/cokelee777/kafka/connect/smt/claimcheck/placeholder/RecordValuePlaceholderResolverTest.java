@@ -2,9 +2,13 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.type.DebeziumStructRecordValuePlaceholder;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.type.GenericStructRecordValuePlaceholder;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.type.RecordValuePlaceholder;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.type.SchemalessRecordValuePlaceholder;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
@@ -54,8 +58,7 @@ class RecordValuePlaceholderResolverTest {
 
       // Then
       assertThat(strategy).isNotNull();
-      assertThat(strategy.getPlaceholderType())
-          .isEqualTo(RecordValuePlaceholderType.DEBEZIUM_STRUCT.type());
+      assertThat(strategy).isInstanceOf(DebeziumStructRecordValuePlaceholder.class);
     }
 
     @Test
@@ -77,8 +80,7 @@ class RecordValuePlaceholderResolverTest {
 
       // Then
       assertThat(strategy).isNotNull();
-      assertThat(strategy.getPlaceholderType())
-          .isEqualTo(RecordValuePlaceholderType.GENERIC_STRUCT.type());
+      assertThat(strategy).isInstanceOf(GenericStructRecordValuePlaceholder.class);
     }
 
     @Test
@@ -95,8 +97,7 @@ class RecordValuePlaceholderResolverTest {
 
       // Then
       assertThat(strategy).isNotNull();
-      assertThat(strategy.getPlaceholderType())
-          .isEqualTo(RecordValuePlaceholderType.SCHEMALESS.type());
+      assertThat(strategy).isInstanceOf(SchemalessRecordValuePlaceholder.class);
     }
 
     @Test

@@ -170,7 +170,7 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     if (log.isDebugEnabled()) {
       log.debug(
           "Applying placeholder strategy '{}' for topic '{}'",
-          placeholder.getPlaceholderType(),
+          placeholder.getClass().getSimpleName(),
           record.topic());
     }
 

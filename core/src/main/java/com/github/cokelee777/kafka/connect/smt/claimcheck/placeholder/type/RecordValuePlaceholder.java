@@ -15,19 +15,6 @@ public sealed interface RecordValuePlaceholder
         GenericStructRecordValuePlaceholder,
         SchemalessRecordValuePlaceholder {
 
-  /**
-   * Returns the placeholder type identifier.
-   *
-   * @return the placeholder type name
-   */
-  String getPlaceholderType();
-
-  /**
-   * Returns the schema type this placeholder supports.
-   *
-   * @return the supported schema type, or {@code null} for schemaless records
-   */
-  Schema.Type getSupportedSchemaType();
 
   /**
    * Checks if this placeholder can handle the given record.

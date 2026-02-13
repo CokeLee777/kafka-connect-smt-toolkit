@@ -25,21 +25,11 @@ public final class GenericStructRecordValuePlaceholder implements RecordValuePla
       LoggerFactory.getLogger(GenericStructRecordValuePlaceholder.class);
 
   @Override
-  public String getPlaceholderType() {
-    return RecordValuePlaceholderType.GENERIC_STRUCT.type();
-  }
-
-  @Override
-  public Schema.Type getSupportedSchemaType() {
-    return Schema.Type.STRUCT;
-  }
-
-  @Override
   public boolean canHandle(SourceRecord record) {
     Schema schema = record.valueSchema();
     Object value = record.value();
     return schema != null
-        && schema.type() == this.getSupportedSchemaType()
+        && schema.type() == Schema.Type.STRUCT
         && value instanceof Struct;
   }
 

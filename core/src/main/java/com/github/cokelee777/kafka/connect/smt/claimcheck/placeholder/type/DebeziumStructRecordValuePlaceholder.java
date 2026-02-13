@@ -1,6 +1,5 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.type;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.placeholder.RecordValuePlaceholderType;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.kafka.connect.data.Field;
@@ -14,9 +13,9 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link RecordValuePlaceholder} implementation for Debezium-specific {@link Struct} records.
  *
- * <p>This strategy identifies Debezium change event records (based on schema name or metadata fields)
- * and generates a placeholder {@link Struct} where the actual data fields ("before", "after") are nulled out,
- * while preserving metadata fields.
+ * <p>This strategy identifies Debezium change event records (based on schema name or metadata
+ * fields) and generates a placeholder {@link Struct} where the actual data fields ("before",
+ * "after") are nulled out, while preserving metadata fields.
  */
 public final class DebeziumStructRecordValuePlaceholder implements RecordValuePlaceholder {
 
@@ -27,21 +26,11 @@ public final class DebeziumStructRecordValuePlaceholder implements RecordValuePl
   private static final Set<String> DEBEZIUM_DATA_FIELDS = Set.of("before", "after");
 
   @Override
-  public String getPlaceholderType() {
-    return RecordValuePlaceholderType.DEBEZIUM_STRUCT.type();
-  }
-
-  @Override
-  public Schema.Type getSupportedSchemaType() {
-    return Schema.Type.STRUCT;
-  }
-
-  @Override
   public boolean canHandle(SourceRecord record) {
     Schema schema = record.valueSchema();
     Object value = record.value();
     return schema != null
-        && schema.type() == this.getSupportedSchemaType()
+        && schema.type() == Schema.Type.STRUCT
         && value instanceof Struct
         && isDebeziumSchema(schema);
   }
