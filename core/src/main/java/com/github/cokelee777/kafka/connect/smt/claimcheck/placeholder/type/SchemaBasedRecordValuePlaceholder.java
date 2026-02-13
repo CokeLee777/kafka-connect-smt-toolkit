@@ -13,10 +13,9 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link RecordValuePlaceholder} implementation for schema-based records.
  *
- * <p>This strategy generates a placeholder value based on the record's schema,
- * filling in default values for all fields according to their types.
- * It handles primitive types, logical types (Timestamp, Date, Time, Decimal),
- * and nested structures like Structs, Arrays, and Maps.
+ * <p>This strategy generates a placeholder value based on the record's schema, filling in default
+ * values for all fields according to their types. It handles primitive types, logical types
+ * (Timestamp, Date, Time, Decimal), and nested structures like Structs, Arrays, and Maps.
  */
 public final class SchemaBasedRecordValuePlaceholder implements RecordValuePlaceholder {
 
