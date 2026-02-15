@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigException;
-import org.apache.kafka.connect.errors.DataException; // Added this import
+import org.apache.kafka.connect.errors.DataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

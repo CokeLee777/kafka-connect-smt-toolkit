@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigException;
-import org.apache.kafka.connect.errors.DataException; // Added this import
+import org.apache.kafka.connect.errors.DataException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 

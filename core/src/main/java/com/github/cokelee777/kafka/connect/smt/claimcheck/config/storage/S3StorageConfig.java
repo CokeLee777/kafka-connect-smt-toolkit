@@ -6,9 +6,7 @@ import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import software.amazon.awssdk.regions.Region;
 
-/**
- * Configuration for S3 Storage.
- */
+/** Configuration for S3 Storage. */
 public class S3StorageConfig extends AbstractConfig {
 
   public static final String BUCKET_NAME_CONFIG = "storage.s3.bucket.name";
