@@ -14,8 +14,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 abstract class AbstractS3IntegrationTest {
 
-  private static final Logger log =
-      LoggerFactory.getLogger(AbstractS3IntegrationTest.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(AbstractS3IntegrationTest.class);
 
   protected static final String TOPIC_NAME = "test-topic";
   protected static final String BUCKET_NAME = "test-bucket";
