@@ -176,6 +176,44 @@ class ClaimCheckSourceTransformTest {
       assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
       assertThat(claimCheckHeader.schema()).isEqualTo(ClaimCheckSchema.SCHEMA);
     }
+
+    @Test
+    void shouldPreserveExistingHeadersAndAddClaimCheckHeader() {
+      // Given
+      String referenceUrl = "s3://test-bucket/test/path/uuid";
+      when(storage.store(any())).thenReturn(referenceUrl);
+
+      Schema valueSchema =
+          SchemaBuilder.struct()
+              .name("payload")
+              .field("id", Schema.INT64_SCHEMA)
+              .field("name", Schema.STRING_SCHEMA)
+              .build();
+      Struct value = new Struct(valueSchema).put("id", 1L).put("name", "cokelee777");
+      SourceRecord record =
+          new SourceRecord(
+              null, null, "test-topic", Schema.BYTES_SCHEMA, "key", valueSchema, value);
+
+      // Add a custom header
+      record.headers().add("custom-header", "custom-value", Schema.STRING_SCHEMA);
+
+      // When
+      SourceRecord claimCheckRecord = transform.apply(record);
+
+      // Then
+      assertThat(claimCheckRecord).isNotNull();
+      assertThat(claimCheckRecord.headers().size()).isEqualTo(2);
+      Header customHeader = claimCheckRecord.headers().lastWithName("custom-header");
+      assertThat(customHeader).isNotNull();
+      assertThat(customHeader.key()).isEqualTo("custom-header");
+      assertThat(customHeader.value()).isEqualTo("custom-value");
+      assertThat(customHeader.schema()).isEqualTo(Schema.STRING_SCHEMA);
+
+      Header claimCheckHeader = claimCheckRecord.headers().lastWithName(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader).isNotNull();
+      assertThat(claimCheckHeader.key()).isEqualTo(ClaimCheckSchema.NAME);
+      assertThat(claimCheckHeader.schema()).isEqualTo(ClaimCheckSchema.SCHEMA);
+    }
   }
 
   @Nested

@@ -11,6 +11,7 @@ import com.github.cokelee777.kafka.connect.smt.common.utils.AutoCloseableUtils;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.data.Struct;
+import org.apache.kafka.connect.header.Headers;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.transforms.Transformation;
 import org.slf4j.Logger;
@@ -94,18 +95,17 @@ public class ClaimCheckSourceTransform implements Transformation<SourceRecord> {
     final String referenceUrl = storeRecord(serializedRecord);
     final Struct claimCheckValue = createClaimCheckValue(referenceUrl, recordSizeBytes);
 
-    final SourceRecord newRecord =
-        record.newRecord(
-            record.topic(),
-            record.kafkaPartition(),
-            record.keySchema(),
-            record.key(),
-            record.valueSchema(),
-            placeholderValue,
-            record.timestamp());
-
-    newRecord.headers().add(ClaimCheckSchema.NAME, claimCheckValue, ClaimCheckSchema.SCHEMA);
-    return newRecord;
+    Headers updatedHeaders = record.headers().duplicate();
+    updatedHeaders.add(ClaimCheckSchema.NAME, claimCheckValue, ClaimCheckSchema.SCHEMA);
+    return record.newRecord(
+        record.topic(),
+        record.kafkaPartition(),
+        record.keySchema(),
+        record.key(),
+        record.valueSchema(),
+        placeholderValue,
+        record.timestamp(),
+        updatedHeaders);
   }
 
   private boolean skipClaimCheck(int recordSizeBytes) {
