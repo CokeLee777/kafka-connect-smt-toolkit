@@ -1,6 +1,8 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -8,8 +10,12 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 public abstract class AbstractS3IntegrationTest {
+
+  private static final Logger log =
+      LoggerFactory.getLogger(AbstractS3IntegrationTest.class.getName());
 
   protected static final String TOPIC_NAME = "test-topic";
   protected static final String BUCKET_NAME = "test-bucket";
@@ -43,8 +49,10 @@ public abstract class AbstractS3IntegrationTest {
 
     try {
       s3Client.headBucket(b -> b.bucket(BUCKET_NAME));
-    } catch (Exception e) {
+    } catch (NoSuchBucketException e) {
       s3Client.createBucket(b -> b.bucket(BUCKET_NAME));
+    } catch (Exception e) {
+      log.error("Failed to initialize s3 bucket {}", BUCKET_NAME, e);
     }
   }
 }

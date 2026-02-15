@@ -11,6 +11,8 @@ import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckSchema
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckValue;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.connect.data.Schema;
@@ -45,7 +47,7 @@ public class NormalFlowS3IntegrationTest extends AbstractS3IntegrationTest {
   }
 
   @Test
-  void shouldStorePayloadToS3InSourceAndRestoreItInSink() throws IOException {
+  void shouldStorePayloadToS3InSourceAndRestoreItInSink() throws IOException, URISyntaxException {
     // Given: Common
     // Common config
     Map<String, Object> commonConfig = new HashMap<>();
@@ -115,7 +117,8 @@ public class NormalFlowS3IntegrationTest extends AbstractS3IntegrationTest {
   }
 
   private Header validateTransformedSourceRecord(
-      SourceRecord transformedSourceRecord, SourceRecord initialSourceRecord) throws IOException {
+      SourceRecord transformedSourceRecord, SourceRecord initialSourceRecord)
+      throws IOException, URISyntaxException {
     // Validate ClaimCheckSourceRecord
     assertThat(transformedSourceRecord).isNotNull();
     assertThat(transformedSourceRecord.topic()).isEqualTo(TOPIC_NAME);
@@ -147,7 +150,7 @@ public class NormalFlowS3IntegrationTest extends AbstractS3IntegrationTest {
     assertThat(originalSizeBytes).isGreaterThan(0);
 
     // Verify that actual data is stored in S3
-    String key = referenceUrl.substring(("s3://" + BUCKET_NAME + "/").length());
+    String key = new URI(referenceUrl).getPath().substring(1);
     try (ResponseInputStream<GetObjectResponse> s3Object =
         s3Client.getObject(GetObjectRequest.builder().bucket(BUCKET_NAME).key(key).build())) {
       byte[] serializedRecord = s3Object.readAllBytes();

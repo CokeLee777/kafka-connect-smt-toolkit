@@ -142,8 +142,9 @@ class NormalFlowFileSystemIntegrationTest extends AbstractFileSystemIntegrationT
     // Verify that actual data is stored in file system
     Path filePath = Path.of(referenceUrl.replace("file://", ""));
     assertThat(Files.exists(filePath)).isTrue();
-    assertThat(Files.readAllBytes(filePath)).isNotEmpty();
-    assertThat(Files.readAllBytes(filePath).length).isEqualTo(originalSizeBytes);
+    byte[] fileContent = Files.readAllBytes(filePath);
+    assertThat(fileContent).isNotEmpty();
+    assertThat(fileContent.length).isEqualTo(originalSizeBytes);
 
     return transformedSourceHeader;
   }

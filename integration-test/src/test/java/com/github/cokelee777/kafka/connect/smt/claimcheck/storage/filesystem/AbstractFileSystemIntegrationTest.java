@@ -7,8 +7,13 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractFileSystemIntegrationTest {
+
+  private static final Logger log =
+      LoggerFactory.getLogger(AbstractFileSystemIntegrationTest.class);
 
   protected static final String TOPIC_NAME = "test-topic";
   protected static Path TEMP_DIR_PATH;
@@ -30,7 +35,7 @@ public abstract class AbstractFileSystemIntegrationTest {
                   try {
                     Files.delete(path);
                   } catch (IOException e) {
-                    System.err.println("Failed to delete " + path + ": " + e.getMessage());
+                    log.error("Failed to delete {}", path, e);
                   }
                 });
       }
