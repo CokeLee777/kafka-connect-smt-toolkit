@@ -7,8 +7,7 @@ import java.util.Map;
  *
  * <p>Stores large payloads externally and returns a reference URL for retrieval.
  */
-public sealed interface ClaimCheckStorage
-    permits CloseableClaimCheckStorage, FileSystemStorage {
+public sealed interface ClaimCheckStorage permits CloseableClaimCheckStorage, FileSystemStorage {
 
   /**
    * Returns the storage type identifier.

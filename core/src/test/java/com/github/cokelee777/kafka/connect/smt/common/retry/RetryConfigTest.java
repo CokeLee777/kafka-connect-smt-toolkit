@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.time.Duration;
-
 import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

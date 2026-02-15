@@ -117,7 +117,7 @@ public record ClaimCheckValue(String referenceUrl, int originalSizeBytes, long u
               + referenceUrlObj.getClass().getSimpleName());
     }
 
-      if (originalSizeBytesObj == null) {
+    if (originalSizeBytesObj == null) {
       throw new DataException(
           "Missing required field '"
               + ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES
