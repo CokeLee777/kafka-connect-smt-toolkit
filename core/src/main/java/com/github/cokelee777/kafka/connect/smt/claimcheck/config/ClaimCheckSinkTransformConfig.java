@@ -3,9 +3,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.config;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
 
-/**
- * Configuration for the ClaimCheck Sink Transformation.
- */
+/** Configuration for the ClaimCheck Sink Transformation. */
 public class ClaimCheckSinkTransformConfig extends ClaimCheckTransformConfig {
 
   public static final ConfigDef CONFIG;
