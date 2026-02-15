@@ -1,9 +1,12 @@
-package com.github.cokelee777.kafka.connect.smt.claimcheck;
+package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.filesystem;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSinkTransform;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSourceTransform;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.config.ClaimCheckSinkTransformConfig;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.config.ClaimCheckSourceTransformConfig;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.FileSystemStorageConfig;
@@ -13,51 +16,25 @@ import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStor
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaBuilder;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.source.SourceRecord;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-class FileSystemClaimCheckE2EFlowTest {
-
-  private static final String TOPIC_NAME = "test-topic";
-  private static Path tempDirPath;
+public class RetryFileSystemIntegrationTest extends AbstractFileSystemIntegrationTest {
 
   private ClaimCheckSourceTransform sourceTransform;
   private ClaimCheckSinkTransform sinkTransform;
-
-  @BeforeAll
-  static void beforeAll() throws IOException {
-    tempDirPath = Files.createTempDirectory("file-system-claim-check-test");
-  }
-
-  @AfterAll
-  static void afterAll() throws IOException {
-    // Delete the temporary directory and its contents
-    if (tempDirPath != null && Files.exists(tempDirPath)) {
-      try (Stream<Path> pathStream = Files.walk(tempDirPath)) {
-        pathStream
-            .sorted(Comparator.reverseOrder())
-            .forEach(
-                path -> {
-                  try {
-                    Files.delete(path);
-                  } catch (IOException e) {
-                    System.err.println("Failed to delete " + path + ": " + e.getMessage());
-                  }
-                });
-      }
-    }
-  }
 
   @BeforeEach
   void setUp() {
@@ -72,57 +49,10 @@ class FileSystemClaimCheckE2EFlowTest {
   }
 
   @Nested
-  class NormalFlowIntegrationTest {
-
-    @Test
-    void shouldPerformClaimCheckE2EFlow() throws IOException {
-      // Given: Common
-      // Common config
-      Map<String, Object> commonConfig = new HashMap<>();
-      commonConfig.put(FileSystemStorageConfig.PATH_CONFIG, tempDirPath.toString());
-
-      // Given: Source
-      // ClaimCheckSourceTransform config
-      Map<String, Object> sourceTransformConfig = new HashMap<>(commonConfig);
-      sourceTransformConfig.put(ClaimCheckSourceTransformConfig.THRESHOLD_BYTES_CONFIG, 1);
-      sourceTransformConfig.put(
-          ClaimCheckSourceTransformConfig.STORAGE_TYPE_CONFIG,
-          ClaimCheckStorageType.FILESYSTEM.type());
-      sourceTransform.configure(sourceTransformConfig);
-
-      SourceRecord initialSourceRecord = generateSourceRecord();
-
-      // When: Source
-      SourceRecord transformedSourceRecord = sourceTransform.apply(initialSourceRecord);
-
-      // Then: Source
-      Header transformedSourceHeader =
-          validateTransformedSourceRecord(transformedSourceRecord, initialSourceRecord);
-
-      // Given: Sink
-      // ClaimCheckSinkTransform config
-      Map<String, Object> sinkTransformConfig = new HashMap<>(commonConfig);
-      sinkTransformConfig.put(
-          ClaimCheckSinkTransformConfig.STORAGE_TYPE_CONFIG,
-          ClaimCheckStorageType.FILESYSTEM.type());
-      sinkTransform.configure(sinkTransformConfig);
-
-      SinkRecord initialSinkRecord =
-          generateSinkRecord(transformedSourceRecord, transformedSourceHeader);
-
-      // When: Sink
-      SinkRecord restoredSinkRecord = sinkTransform.apply(initialSinkRecord);
-
-      // Then: Sink
-      validateRestoredSinkRecord(restoredSinkRecord, initialSourceRecord);
-    }
-  }
-
-  @Nested
   class FileSystemSourceRetryIntegrationTest {
 
     @Test
-    void shouldRetryAndSucceedOnTransientFailure() {
+    void shouldSucceedWithRetriesWhenFileWriteFailsTemporarily() throws IOException {
       // Given
       Map<String, Object> sourceTransformConfig = generateSourceConfigWithRetry(3);
       sourceTransform.configure(sourceTransformConfig);
@@ -148,11 +78,13 @@ class FileSystemClaimCheckE2EFlowTest {
         // Then
         assertThat(transformedRecord).isNotNull();
         assertThat(writeAttemptCount.get()).isGreaterThanOrEqualTo(2);
+
+        validateTransformedSourceRecord(transformedRecord, initialSourceRecord);
       }
     }
 
     @Test
-    void shouldFailWhenMaxRetriesExceeded() {
+    void shouldFailWhenFileWriteFailsPersistently() {
       // Given
       Map<String, Object> sourceTransformConfig = generateSourceConfigWithRetry(2);
       sourceTransform.configure(sourceTransformConfig);
@@ -171,7 +103,7 @@ class FileSystemClaimCheckE2EFlowTest {
     }
 
     @Test
-    void shouldFailImmediatelyWhenRetryDisabled() {
+    void shouldFailImmediatelyWhenFileWriteFailsAndRetryDisabled() {
       // Given
       Map<String, Object> sourceTransformConfig = generateSourceConfigWithRetry(0);
       sourceTransform.configure(sourceTransformConfig);
@@ -201,7 +133,7 @@ class FileSystemClaimCheckE2EFlowTest {
   class FileSystemSinkRetryIntegrationTest {
 
     @Test
-    void shouldRetryAndSucceedOnTransientFailure() {
+    void shouldSucceedWithRetriesWhenFileReadFailsTemporarily() {
       // Given
       Map<String, Object> sinkTransformConfig = generateSinkConfigWithRetry(3);
       sinkTransform.configure(sinkTransformConfig);
@@ -227,11 +159,14 @@ class FileSystemClaimCheckE2EFlowTest {
         // Then
         assertThat(restoredSinkRecord).isNotNull();
         assertThat(readAttemptCount.get()).isGreaterThanOrEqualTo(2);
+
+        SourceRecord initialSourceRecord = generateSourceRecord();
+        validateRestoredSinkRecord(restoredSinkRecord, initialSourceRecord);
       }
     }
 
     @Test
-    void shouldFailWhenMaxRetriesExceeded() {
+    void shouldFailWhenFileReadFailsPersistently() {
       // Given
       Map<String, Object> sinkTransformConfig = generateSinkConfigWithRetry(2);
       sinkTransform.configure(sinkTransformConfig);
@@ -251,7 +186,7 @@ class FileSystemClaimCheckE2EFlowTest {
     }
 
     @Test
-    void shouldFailImmediatelyWhenRetryDisabled() {
+    void shouldFailImmediatelyWhenFileReadFailsAndRetryDisabled() {
       // Given
       Map<String, Object> sinkTransformConfig = generateSinkConfigWithRetry(0);
       sinkTransform.configure(sinkTransformConfig);
@@ -283,7 +218,7 @@ class FileSystemClaimCheckE2EFlowTest {
           ClaimCheckSourceTransformConfig.STORAGE_TYPE_CONFIG,
           ClaimCheckStorageType.FILESYSTEM.type());
       sourceConfig.put(ClaimCheckSourceTransformConfig.THRESHOLD_BYTES_CONFIG, 1);
-      sourceConfig.put(FileSystemStorageConfig.PATH_CONFIG, tempDirPath.toString());
+      sourceConfig.put(FileSystemStorageConfig.PATH_CONFIG, TEMP_DIR_PATH.toString());
       sourceTransform.configure(sourceConfig);
 
       SourceRecord initialSourceRecord = generateSourceRecord();
@@ -302,7 +237,7 @@ class FileSystemClaimCheckE2EFlowTest {
         ClaimCheckSourceTransformConfig.STORAGE_TYPE_CONFIG,
         ClaimCheckStorageType.FILESYSTEM.type());
     config.put(ClaimCheckSourceTransformConfig.THRESHOLD_BYTES_CONFIG, 1);
-    config.put(FileSystemStorageConfig.PATH_CONFIG, tempDirPath.toString());
+    config.put(FileSystemStorageConfig.PATH_CONFIG, TEMP_DIR_PATH.toString());
     config.put(FileSystemStorageConfig.RETRY_MAX_CONFIG, retryMax);
     config.put(FileSystemStorageConfig.RETRY_BACKOFF_MS_CONFIG, 50L);
     config.put(FileSystemStorageConfig.RETRY_MAX_BACKOFF_MS_CONFIG, 100L);
@@ -313,7 +248,7 @@ class FileSystemClaimCheckE2EFlowTest {
     Map<String, Object> config = new HashMap<>();
     config.put(
         ClaimCheckSinkTransformConfig.STORAGE_TYPE_CONFIG, ClaimCheckStorageType.FILESYSTEM.type());
-    config.put(FileSystemStorageConfig.PATH_CONFIG, tempDirPath.toString());
+    config.put(FileSystemStorageConfig.PATH_CONFIG, TEMP_DIR_PATH.toString());
     config.put(FileSystemStorageConfig.RETRY_MAX_CONFIG, retryMax);
     config.put(FileSystemStorageConfig.RETRY_BACKOFF_MS_CONFIG, 50L);
     config.put(FileSystemStorageConfig.RETRY_MAX_BACKOFF_MS_CONFIG, 100L);
@@ -374,7 +309,7 @@ class FileSystemClaimCheckE2EFlowTest {
     String referenceUrl = claimCheckValue.referenceUrl();
     int originalSizeBytes = claimCheckValue.originalSizeBytes();
 
-    assertThat(referenceUrl).startsWith("file://" + tempDirPath.toRealPath() + "/");
+    assertThat(referenceUrl).startsWith("file://" + TEMP_DIR_PATH.toRealPath() + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);
 
     // Verify that actual data is stored in file system
