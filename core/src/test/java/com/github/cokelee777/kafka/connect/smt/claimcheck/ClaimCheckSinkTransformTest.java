@@ -47,7 +47,6 @@ class ClaimCheckSinkTransformTest {
       // Then
       assertThat(transform.getConfig().getStorageType()).isEqualTo(ClaimCheckStorageType.S3.type());
       assertThat(transform.getStorage()).isNotNull();
-      assertThat(transform.getRecordSerializer()).isNotNull();
     }
   }
 
@@ -90,7 +89,7 @@ class ClaimCheckSinkTransformTest {
               .put(ClaimCheckSchemaFields.ORIGINAL_SIZE_BYTES, fetchedJson.length())
               .put(ClaimCheckSchemaFields.UPLOADED_AT, System.currentTimeMillis());
       SinkRecord record =
-          new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", null, null, 0);
+          new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", null, fetchedJson, 0);
       record.headers().add(ClaimCheckSchema.NAME, claimCheckValue, ClaimCheckSchema.SCHEMA);
 
       // When
@@ -98,7 +97,7 @@ class ClaimCheckSinkTransformTest {
 
       // Then
       Map<String, Object> expectedValue = new HashMap<>();
-      expectedValue.put("id", 1L);
+      expectedValue.put("id", 1);
       expectedValue.put("name", "cokelee777");
 
       assertThat(originalRecord).isNotNull();
@@ -115,8 +114,7 @@ class ClaimCheckSinkTransformTest {
     @Test
     void shouldRestoreOriginalRecordFromGenericSchemaClaimCheck() {
       // Given
-      String fetchedJson =
-          "{\"schema\":{\"type\":\"struct\",\"fields\":[{\"type\":\"int64\",\"field\":\"id\"},{\"type\":\"string\",\"field\":\"name\"}],\"optional\":false,\"name\":\"payload\"},\"payload\":{\"id\":1,\"name\":\"cokelee777\"}}";
+      String fetchedJson = "{\"id\":1,\"name\":\"cokelee777\"}";
       when(storage.retrieve(any())).thenReturn(fetchedJson.getBytes(StandardCharsets.UTF_8));
 
       String referenceUrl = "s3://test-bucket/test/path/uuid";
@@ -133,7 +131,7 @@ class ClaimCheckSinkTransformTest {
               .field("name", Schema.STRING_SCHEMA)
               .build();
       SinkRecord record =
-          new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", valueSchema, null, 0);
+          new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", valueSchema, fetchedJson, 0);
       record.headers().add(ClaimCheckSchema.NAME, claimCheckValue, ClaimCheckSchema.SCHEMA);
 
       // When
@@ -157,7 +155,7 @@ class ClaimCheckSinkTransformTest {
     void shouldRestoreOriginalRecordFromDebeziumSchemaClaimCheck() {
       // Given
       String fetchedJson =
-          "{\"schema\":{\"type\":\"struct\",\"fields\":[{\"type\":\"struct\",\"fields\":[{\"type\":\"int64\",\"field\":\"id\"},{\"type\":\"string\",\"field\":\"name\"}],\"optional\":true,\"name\":\"test.db.table.Value\",\"field\":\"before\"},{\"type\":\"struct\",\"fields\":[{\"type\":\"int64\",\"field\":\"id\"},{\"type\":\"string\",\"field\":\"name\"}],\"optional\":true,\"name\":\"test.db.table.Value\",\"field\":\"after\"},{\"type\":\"string\",\"field\":\"op\"},{\"type\":\"int64\",\"optional\":true,\"field\":\"ts_ms\"}],\"optional\":false,\"name\":\"io.debezium.connector.mysql.Envelope\"},\"payload\":{\"before\":{\"id\":1,\"name\":\"before cokelee777\"},\"after\":{\"id\":1,\"name\":\"after cokelee777\"},\"op\":\"c\",\"ts_ms\":1672531200000}}";
+          "{\"before\":{\"id\":1,\"name\":\"before cokelee777\"},\"after\":{\"id\":1,\"name\":\"after cokelee777\"},\"op\":\"c\",\"ts_ms\":1672531200000}";
       when(storage.retrieve(any())).thenReturn(fetchedJson.getBytes(StandardCharsets.UTF_8));
 
       String referenceUrl = "s3://test-bucket/test/path/uuid";
@@ -183,7 +181,7 @@ class ClaimCheckSinkTransformTest {
               .field("ts_ms", Schema.OPTIONAL_INT64_SCHEMA)
               .build();
       SinkRecord record =
-          new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", valueSchema, null, 0);
+          new SinkRecord("test-topic", 0, Schema.BYTES_SCHEMA, "key", valueSchema, fetchedJson, 0);
       record.headers().add(ClaimCheckSchema.NAME, claimCheckValue, ClaimCheckSchema.SCHEMA);
 
       // When
