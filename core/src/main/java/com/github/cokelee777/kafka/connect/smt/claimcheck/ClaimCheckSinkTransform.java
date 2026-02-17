@@ -8,7 +8,7 @@ import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.ClaimChec
 import com.github.cokelee777.kafka.connect.smt.common.utils.AutoCloseableUtils;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigDef;
-import org.apache.kafka.connect.errors.ConnectException;
+import org.apache.kafka.connect.errors.DataException;
 import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.header.Headers;
 import org.apache.kafka.connect.sink.SinkRecord;
@@ -93,7 +93,16 @@ public class ClaimCheckSinkTransform implements Transformation<SinkRecord> {
     ClaimCheckValue claimCheckValue = ClaimCheckValue.from(claimCheckHeaderValue);
     byte[] originalRecordValueBytes = storage.retrieve(claimCheckValue.referenceUrl());
     if (originalRecordValueBytes == null) {
-      throw new ConnectException("Failed to retrieve data from: " + claimCheckValue.referenceUrl());
+      throw new DataException("Failed to retrieve data from: " + claimCheckValue.referenceUrl());
+    }
+
+    if (originalRecordValueBytes.length != claimCheckValue.originalSizeBytes()) {
+      throw new DataException(
+          String.format(
+              "Data integrity violation: size mismatch for %s (expected: %d bytes, retrieved: %d bytes)",
+              claimCheckValue.referenceUrl(),
+              claimCheckValue.originalSizeBytes(),
+              originalRecordValueBytes.length));
     }
 
     Object originalRecordValue =
