@@ -112,10 +112,7 @@ public record ClaimCheckMetadata(String referenceUrl, int originalSizeBytes, lon
 
       return new ClaimCheckMetadata(
           referenceUrlNode.asText(), originalSizeBytesNode.intValue(), uploadedAtNode.longValue());
-
-    } catch (DataException e) {
-      throw e;
-    } catch (Exception e) {
+    } catch (JsonProcessingException e) {
       throw new DataException("Failed to parse claim check JSON", e);
     }
   }
