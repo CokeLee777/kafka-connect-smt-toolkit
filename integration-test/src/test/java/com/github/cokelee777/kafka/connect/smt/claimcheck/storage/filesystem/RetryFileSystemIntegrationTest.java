@@ -306,24 +306,16 @@ class RetryFileSystemIntegrationTest extends AbstractFileSystemIntegrationTest {
     assertThat(transformedSourceHeader.key()).isEqualTo(ClaimCheckHeader.HEADER_KEY);
     assertThat(transformedSourceHeader.schema()).isEqualTo(Schema.STRING_SCHEMA);
     assertThat(transformedSourceHeader.value()).isInstanceOf(String.class);
-    assertThatNoException()
-        .isThrownBy(
-            () -> {
-              ClaimCheckMetadata claimCheckMetadata =
-                  ClaimCheckHeader.fromHeader(transformedSourceHeader);
-              assertThat(claimCheckMetadata).isNotNull();
-              assertThat(claimCheckMetadata.referenceUrl()).isNotNull();
-              assertThat(claimCheckMetadata.originalSizeBytes()).isNotZero();
-              assertThat(claimCheckMetadata.uploadedAt()).isNotZero();
-            });
 
     // Validate actual data
     ClaimCheckMetadata claimCheckMetadata = ClaimCheckHeader.fromHeader(transformedSourceHeader);
     String referenceUrl = claimCheckMetadata.referenceUrl();
     int originalSizeBytes = claimCheckMetadata.originalSizeBytes();
+    long uploadedAt = claimCheckMetadata.uploadedAt();
 
     assertThat(referenceUrl).startsWith("file://" + TEMP_DIR_PATH.toRealPath() + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);
+    assertThat(uploadedAt).isGreaterThan(0);
 
     // Verify that actual data is stored in file system
     Path filePath = Path.of(URI.create(referenceUrl).getPath());

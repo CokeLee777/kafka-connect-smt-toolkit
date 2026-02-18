@@ -1,7 +1,6 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.s3;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSinkTransform;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSourceTransform;
@@ -139,24 +138,16 @@ class NormalFlowS3IntegrationTest extends AbstractS3IntegrationTest {
     assertThat(transformedSourceHeader.key()).isEqualTo(ClaimCheckHeader.HEADER_KEY);
     assertThat(transformedSourceHeader.schema()).isEqualTo(Schema.STRING_SCHEMA);
     assertThat(transformedSourceHeader.value()).isInstanceOf(String.class);
-    assertThatNoException()
-        .isThrownBy(
-            () -> {
-              ClaimCheckMetadata claimCheckMetadata =
-                  ClaimCheckHeader.fromHeader(transformedSourceHeader);
-              assertThat(claimCheckMetadata).isNotNull();
-              assertThat(claimCheckMetadata.referenceUrl()).isNotNull();
-              assertThat(claimCheckMetadata.originalSizeBytes()).isNotZero();
-              assertThat(claimCheckMetadata.uploadedAt()).isNotZero();
-            });
 
     // Validate actual data
     ClaimCheckMetadata claimCheckMetadata = ClaimCheckHeader.fromHeader(transformedSourceHeader);
     String referenceUrl = claimCheckMetadata.referenceUrl();
     int originalSizeBytes = claimCheckMetadata.originalSizeBytes();
+    long uploadedAt = claimCheckMetadata.uploadedAt();
 
     assertThat(referenceUrl).startsWith("s3://" + BUCKET_NAME + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);
+    assertThat(uploadedAt).isGreaterThan(0);
 
     // Verify that actual data is stored in S3
     String key = URI.create(referenceUrl).getPath().substring(1);

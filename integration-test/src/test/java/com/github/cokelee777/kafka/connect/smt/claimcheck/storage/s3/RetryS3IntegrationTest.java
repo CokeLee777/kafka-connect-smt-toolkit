@@ -265,24 +265,18 @@ class RetryS3IntegrationTest extends AbstractS3WithToxiproxyIntegrationTest {
     assertThat(transformedSourceHeader.key()).isEqualTo(ClaimCheckHeader.HEADER_KEY);
     assertThat(transformedSourceHeader.schema()).isEqualTo(Schema.STRING_SCHEMA);
     assertThat(transformedSourceHeader.value()).isInstanceOf(String.class);
-    assertThatNoException()
-        .isThrownBy(
-            () -> {
-              ClaimCheckMetadata claimCheckMetadata =
-                  ClaimCheckHeader.fromHeader(transformedSourceHeader);
-              assertThat(claimCheckMetadata).isNotNull();
-              assertThat(claimCheckMetadata.referenceUrl()).isNotNull();
-              assertThat(claimCheckMetadata.originalSizeBytes()).isNotZero();
-              assertThat(claimCheckMetadata.uploadedAt()).isNotZero();
-            });
 
     // Validate actual data
     ClaimCheckMetadata claimCheckMetadata = ClaimCheckHeader.fromHeader(transformedSourceHeader);
+    assertThat(claimCheckMetadata).isNotNull();
+
     String referenceUrl = claimCheckMetadata.referenceUrl();
     int originalSizeBytes = claimCheckMetadata.originalSizeBytes();
+    long uploadedAt = claimCheckMetadata.uploadedAt();
 
     assertThat(referenceUrl).startsWith("s3://" + BUCKET_NAME + "/");
     assertThat(originalSizeBytes).isGreaterThan(0);
+    assertThat(uploadedAt).isGreaterThan(0);
 
     // Verify that actual data is stored in S3
     String key = referenceUrl.substring(("s3://" + BUCKET_NAME + "/").length());
