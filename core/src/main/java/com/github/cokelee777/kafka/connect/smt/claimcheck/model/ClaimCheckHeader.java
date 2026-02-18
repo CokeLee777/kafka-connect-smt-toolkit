@@ -1,5 +1,6 @@
 package com.github.cokelee777.kafka.connect.smt.claimcheck.model;
 
+import java.util.Map;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
 import org.apache.kafka.connect.errors.DataException;
@@ -42,10 +43,18 @@ public final class ClaimCheckHeader {
     if (header == null || header.value() == null) {
       throw new DataException("Header or header value is null");
     }
-    if (!(header.value() instanceof String json)) {
-      throw new DataException(
-          "Expected String header value, got: " + header.value().getClass().getSimpleName());
+
+    Object value = header.value();
+
+    if (value instanceof String json) {
+      return ClaimCheckMetadata.fromJson(json);
     }
-    return ClaimCheckMetadata.fromJson(json);
+
+    if (value instanceof Map<?, ?> map) {
+      return ClaimCheckMetadata.fromMap(map);
+    }
+
+    throw new DataException(
+        "Expected String header value, got: " + value.getClass().getSimpleName());
   }
 }

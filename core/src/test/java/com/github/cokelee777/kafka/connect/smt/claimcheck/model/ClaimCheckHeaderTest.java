@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
 import org.apache.kafka.connect.errors.DataException;
@@ -95,6 +97,37 @@ class ClaimCheckHeaderTest {
 
     @Test
     void shouldThrowExceptionWhenHeaderValueIsNotString() {
+      // Given
+      Header header = mock(Header.class);
+      when(header.value()).thenReturn(12345);
+
+      // When & Then
+      assertThatExceptionOfType(DataException.class)
+          .isThrownBy(() -> ClaimCheckHeader.fromHeader(header))
+          .withMessage("Expected String header value, got: Integer");
+    }
+
+    @Test
+    void shouldParseClaimCheckMetadataFromMapHeader() {
+      // Given
+      Map<String, Object> map = new LinkedHashMap<>();
+      map.put(ClaimCheckHeaderFields.REFERENCE_URL, "s3://test-bucket/claim-checks");
+      map.put(ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES, 1024);
+      map.put(ClaimCheckHeaderFields.UPLOADED_AT, 1700000000000L);
+      Header header = mock(Header.class);
+      when(header.value()).thenReturn(map);
+
+      // When
+      ClaimCheckMetadata metadata = ClaimCheckHeader.fromHeader(header);
+
+      // Then
+      assertThat(metadata.referenceUrl()).isEqualTo("s3://test-bucket/claim-checks");
+      assertThat(metadata.originalSizeBytes()).isEqualTo(1024);
+      assertThat(metadata.uploadedAt()).isEqualTo(1700000000000L);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenHeaderValueTypeIsUnsupported() {
       // Given
       Header header = mock(Header.class);
       when(header.value()).thenReturn(12345);

@@ -2,6 +2,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.model;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Map;
 import org.apache.kafka.connect.errors.DataException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -160,6 +161,123 @@ class ClaimCheckMetadataTest {
           .isThrownBy(() -> ClaimCheckMetadata.fromJson(json))
           .withMessageContaining("uploaded_at")
           .withMessageContaining("expected LONG");
+    }
+  }
+
+  @Nested
+  class FromMapTest {
+
+    @Test
+    void shouldDeserializeFromMap() {
+      // Given
+      Map<String, Object> map =
+          Map.of(
+              ClaimCheckHeaderFields.REFERENCE_URL,
+              "s3://test-bucket/claim-checks",
+              ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES,
+              1024,
+              ClaimCheckHeaderFields.UPLOADED_AT,
+              1700000000000L);
+
+      // When
+      ClaimCheckMetadata metadata = ClaimCheckMetadata.fromMap(map);
+
+      // Then
+      assertThat(metadata.referenceUrl()).isEqualTo("s3://test-bucket/claim-checks");
+      assertThat(metadata.originalSizeBytes()).isEqualTo(1024);
+      assertThat(metadata.uploadedAt()).isEqualTo(1700000000000L);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenRequiredFieldIsMissing() {
+      // Given
+      Map<String, Object> map =
+          Map.of(ClaimCheckHeaderFields.REFERENCE_URL, "s3://test-bucket/claim-checks");
+
+      // When & Then
+      assertThatExceptionOfType(DataException.class)
+          .isThrownBy(() -> ClaimCheckMetadata.fromMap(map))
+          .withMessage("Missing required fields in claim check Map");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenReferenceUrlTypeIsInvalid() {
+      // Given
+      Map<String, Object> map =
+          Map.of(
+              ClaimCheckHeaderFields.REFERENCE_URL, 123,
+              ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES, 1024,
+              ClaimCheckHeaderFields.UPLOADED_AT, 1700000000000L);
+
+      // When & Then
+      assertThatExceptionOfType(DataException.class)
+          .isThrownBy(() -> ClaimCheckMetadata.fromMap(map))
+          .withMessageContaining("reference_url")
+          .withMessageContaining("expected String");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenOriginalSizeBytesTypeIsInvalid() {
+      // Given
+      Map<String, Object> map =
+          Map.of(
+              ClaimCheckHeaderFields.REFERENCE_URL, "s3://test-bucket/claim-checks",
+              ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES, "not-a-number",
+              ClaimCheckHeaderFields.UPLOADED_AT, 1700000000000L);
+
+      // When & Then
+      assertThatExceptionOfType(DataException.class)
+          .isThrownBy(() -> ClaimCheckMetadata.fromMap(map))
+          .withMessageContaining("original_size_bytes")
+          .withMessageContaining("expected Integer");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUploadedAtTypeIsInvalid() {
+      // Given
+      Map<String, Object> map =
+          Map.of(
+              ClaimCheckHeaderFields.REFERENCE_URL, "s3://test-bucket/claim-checks",
+              ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES, 1024,
+              ClaimCheckHeaderFields.UPLOADED_AT, "not-a-number");
+
+      // When & Then
+      assertThatExceptionOfType(DataException.class)
+          .isThrownBy(() -> ClaimCheckMetadata.fromMap(map))
+          .withMessageContaining("uploaded_at")
+          .withMessageContaining("expected Long");
+    }
+
+    @Test
+    void shouldAcceptLongAsOriginalSizeBytes() {
+      // Given
+      Map<String, Object> map =
+          Map.of(
+              ClaimCheckHeaderFields.REFERENCE_URL, "s3://test-bucket/claim-checks",
+              ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES, 1024L,
+              ClaimCheckHeaderFields.UPLOADED_AT, 1700000000000L);
+
+      // When
+      ClaimCheckMetadata metadata = ClaimCheckMetadata.fromMap(map);
+
+      // Then
+      assertThat(metadata.originalSizeBytes()).isEqualTo(1024);
+    }
+
+    @Test
+    void shouldAcceptIntegerAsUploadedAt() {
+      // Given
+      Map<String, Object> map =
+          Map.of(
+              ClaimCheckHeaderFields.REFERENCE_URL, "s3://test-bucket/claim-checks",
+              ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES, 1024,
+              ClaimCheckHeaderFields.UPLOADED_AT, 1700000000);
+
+      // When
+      ClaimCheckMetadata metadata = ClaimCheckMetadata.fromMap(map);
+
+      // Then
+      assertThat(metadata.uploadedAt()).isEqualTo(1700000000L);
     }
   }
 }

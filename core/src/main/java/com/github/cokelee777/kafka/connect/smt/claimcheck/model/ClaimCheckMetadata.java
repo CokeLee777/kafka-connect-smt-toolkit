@@ -116,4 +116,69 @@ public record ClaimCheckMetadata(String referenceUrl, int originalSizeBytes, lon
       throw new DataException("Failed to parse claim check JSON", e);
     }
   }
+
+  public static ClaimCheckMetadata fromMap(Map<?, ?> map) {
+    Object referenceUrlObj = map.get(ClaimCheckHeaderFields.REFERENCE_URL);
+    Object originalSizeBytesObj = map.get(ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES);
+    Object uploadedAtObj = map.get(ClaimCheckHeaderFields.UPLOADED_AT);
+
+    if (referenceUrlObj == null || originalSizeBytesObj == null || uploadedAtObj == null) {
+      throw new DataException("Missing required fields in claim check Map");
+    }
+    if (!(referenceUrlObj instanceof String referenceUrl)) {
+      throw new DataException(
+          "Invalid type for '"
+              + ClaimCheckHeaderFields.REFERENCE_URL
+              + "': expected String, got "
+              + referenceUrlObj.getClass().getSimpleName());
+    }
+
+    int originalSizeBytes = parseInteger(originalSizeBytesObj);
+    long uploadedAt = parseLong(uploadedAtObj);
+
+    return new ClaimCheckMetadata(referenceUrl, originalSizeBytes, uploadedAt);
+  }
+
+  private static int parseInteger(Object value) {
+    if (value instanceof Short shortValue) {
+      return shortValue.intValue();
+    }
+
+    if (value instanceof Integer intValue) {
+      return intValue;
+    }
+
+    if (value instanceof Long longValue) {
+      if (longValue < Integer.MIN_VALUE || longValue > Integer.MAX_VALUE) {
+        throw new DataException("Value out of Integer range for original_size_bytes: " + longValue);
+      }
+      return longValue.intValue();
+    }
+
+    throw new DataException(
+        "Invalid type for '"
+            + ClaimCheckHeaderFields.ORIGINAL_SIZE_BYTES
+            + "': expected Integer, got "
+            + value.getClass().getSimpleName());
+  }
+
+  private static long parseLong(Object value) {
+    if (value instanceof Short shortValue) {
+      return shortValue.longValue();
+    }
+
+    if (value instanceof Integer intValue) {
+      return intValue.longValue();
+    }
+
+    if (value instanceof Long longValue) {
+      return longValue;
+    }
+
+    throw new DataException(
+        "Invalid type for '"
+            + ClaimCheckHeaderFields.UPLOADED_AT
+            + "': expected Long, got "
+            + value.getClass().getSimpleName());
+  }
 }
