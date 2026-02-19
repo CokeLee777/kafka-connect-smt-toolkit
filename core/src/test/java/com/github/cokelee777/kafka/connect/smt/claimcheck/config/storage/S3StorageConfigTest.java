@@ -4,7 +4,7 @@ import static com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.S3StorageTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.S3StorageConfigFixture;
 import java.util.Map;
 import org.apache.kafka.common.config.ConfigException;
 import org.junit.jupiter.api.Nested;
@@ -20,7 +20,7 @@ class S3StorageConfigTest {
     void shouldConstructWithAllProvidedArguments() {
       // Given
       Map<String, String> configs =
-          S3StorageTestConfigProvider.builder()
+          S3StorageConfigFixture.builder()
               .bucketName("test-bucket")
               .region(Region.AP_NORTHEAST_1.id())
               .pathPrefix("/test/path")
@@ -38,7 +38,7 @@ class S3StorageConfigTest {
       assertThat(config.getRegion()).isEqualTo(Region.AP_NORTHEAST_1.id());
       assertThat(config.getPathPrefix()).isEqualTo("test/path");
       assertThat(config.getEndpointOverride())
-          .isEqualTo(S3StorageTestConfigProvider.ENDPOINT_OVERRIDE_DEFAULT);
+          .isEqualTo(S3StorageConfigFixture.ENDPOINT_OVERRIDE_DEFAULT);
       assertThat(config.getRetryMax()).isEqualTo(5);
       assertThat(config.getRetryBackoffMs()).isEqualTo(500L);
       assertThat(config.getRetryMaxBackoffMs()).isEqualTo(30000L);
@@ -48,7 +48,7 @@ class S3StorageConfigTest {
     void shouldUseDefaultValuesWhenOptionalArgumentsNotProvided() {
       // Given
       Map<String, String> configs =
-          S3StorageTestConfigProvider.builder().bucketName("test-bucket").build();
+          S3StorageConfigFixture.builder().bucketName("test-bucket").build();
 
       // When
       S3StorageConfig config = new S3StorageConfig(configs);
@@ -66,7 +66,7 @@ class S3StorageConfigTest {
     @Test
     void shouldThrowConfigExceptionWhenBucketNameIsMissing() {
       // Given
-      Map<String, String> configs = S3StorageTestConfigProvider.builder().build();
+      Map<String, String> configs = S3StorageConfigFixture.builder().build();
 
       // When & Then
       assertThatExceptionOfType(ConfigException.class)
@@ -80,7 +80,7 @@ class S3StorageConfigTest {
     @Test
     void shouldThrowConfigExceptionWhenBucketNameIsEmpty() {
       // Given
-      Map<String, String> configs = S3StorageTestConfigProvider.builder().bucketName("").build();
+      Map<String, String> configs = S3StorageConfigFixture.builder().bucketName("").build();
 
       // When & Then
       assertThatExceptionOfType(ConfigException.class)

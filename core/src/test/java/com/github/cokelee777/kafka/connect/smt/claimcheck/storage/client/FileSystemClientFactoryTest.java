@@ -3,7 +3,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.client;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.FileSystemStorageConfig;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.FileSystemStorageTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.FileSystemStorageConfigFixture;
 import java.nio.file.Path;
 import java.util.Map;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +21,7 @@ class FileSystemClientFactoryTest {
     void shouldCreateFileSystemClient() {
       // Given
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder().path(tempDir.toString()).build();
+          FileSystemStorageConfigFixture.builder().path(tempDir.toString()).build();
       FileSystemStorageConfig config = new FileSystemStorageConfig(configs);
 
       // When

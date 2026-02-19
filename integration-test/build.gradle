@@ -3,8 +3,8 @@ ext {
 }
 
 dependencies {
-    // Core
     testImplementation project(':core')
+    testImplementation project(':test-utils')
 
     // Kafka Connect
     testImplementation "org.apache.kafka:connect-api:${kafkaVersion}"

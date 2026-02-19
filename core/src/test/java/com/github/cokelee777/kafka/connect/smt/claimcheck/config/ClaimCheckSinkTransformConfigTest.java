@@ -4,7 +4,7 @@ import static com.github.cokelee777.kafka.connect.smt.claimcheck.config.ClaimChe
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSinkTransformTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.ClaimCheckSinkTransformConfigFixture;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
 import java.util.Collections;
 import java.util.Map;
@@ -22,7 +22,7 @@ class ClaimCheckSinkTransformConfigTest {
     void shouldConstructWithProvidedStorageType() {
       // Given
       Map<String, String> configs =
-          ClaimCheckSinkTransformTestConfigProvider.builder()
+          ClaimCheckSinkTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.FILESYSTEM.type())
               .build();
 
@@ -36,7 +36,7 @@ class ClaimCheckSinkTransformConfigTest {
     @Test
     void shouldThrowConfigExceptionWhenStorageTypeIsMissing() {
       // Given
-      Map<String, String> configs = ClaimCheckSinkTransformTestConfigProvider.builder().build();
+      Map<String, String> configs = ClaimCheckSinkTransformConfigFixture.builder().build();
 
       // When & Then
       assertThatExceptionOfType(ConfigException.class)
@@ -65,7 +65,7 @@ class ClaimCheckSinkTransformConfigTest {
     void shouldValidateStorageTypeConfigAcceptsValidValues() {
       // Given
       Map<String, String> validConfigs =
-          ClaimCheckSinkTransformTestConfigProvider.builder()
+          ClaimCheckSinkTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.FILESYSTEM.type())
               .build();
 
