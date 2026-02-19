@@ -3,7 +3,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type;
 import static org.assertj.core.api.Assertions.*;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.FileSystemStorageConfig;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.FileSystemStorageTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.FileSystemStorageConfigFixture;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +43,7 @@ class FileSystemStorageTest {
     void shouldConfigureWithAllProvidedArguments() {
       // Given
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder()
+          FileSystemStorageConfigFixture.builder()
               .path(tempDir.toString())
               .retryMax(5)
               .retryBackoffMs(500L)
@@ -63,7 +63,7 @@ class FileSystemStorageTest {
     @Test
     void shouldUseDefaultValuesWhenNoArgumentsProvided() {
       // Given
-      Map<String, String> configs = FileSystemStorageTestConfigProvider.builder().build();
+      Map<String, String> configs = FileSystemStorageConfigFixture.builder().build();
 
       // When
       fileSystemStorage.configure(configs);
@@ -91,7 +91,7 @@ class FileSystemStorageTest {
       Path filePath = tempDir.resolve("test.txt").toAbsolutePath().normalize();
       Files.createFile(filePath);
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder().path(filePath.toString()).build();
+          FileSystemStorageConfigFixture.builder().path(filePath.toString()).build();
 
       // When & Then
       assertThatExceptionOfType(ConfigException.class)
@@ -107,7 +107,7 @@ class FileSystemStorageTest {
       readOnlyDir.setReadOnly();
 
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder().path(readOnlyDir.toString()).build();
+          FileSystemStorageConfigFixture.builder().path(readOnlyDir.toString()).build();
 
       // When & Then
       try {
@@ -129,7 +129,7 @@ class FileSystemStorageTest {
     @BeforeEach
     void setUp() {
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder().path(tempDir.toString()).build();
+          FileSystemStorageConfigFixture.builder().path(tempDir.toString()).build();
       fileSystemStorage.configure(configs);
     }
 
@@ -157,7 +157,7 @@ class FileSystemStorageTest {
     @BeforeEach
     void setUp() {
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder().path(tempDir.toString()).build();
+          FileSystemStorageConfigFixture.builder().path(tempDir.toString()).build();
       fileSystemStorage.configure(configs);
     }
 

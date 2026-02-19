@@ -2,3 +2,5 @@ rootProject.name = 'kafka-connect-claim-check-smt'
 
 include 'core'
 include 'integration-test'
+include 'test-utils'
+

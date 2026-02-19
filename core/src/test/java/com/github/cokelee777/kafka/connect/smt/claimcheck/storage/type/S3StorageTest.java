@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.S3StorageConfig;
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.S3StorageTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.S3StorageConfigFixture;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.errors.ClaimCheckStoreException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -41,7 +41,7 @@ class S3StorageTest {
     void shouldConfigureWithAllProvidedArguments() {
       // Given
       Map<String, String> configs =
-          S3StorageTestConfigProvider.builder()
+          S3StorageConfigFixture.builder()
               .bucketName("test-bucket")
               .region(Region.AP_NORTHEAST_1.id())
               .pathPrefix("/test/path")
@@ -66,7 +66,7 @@ class S3StorageTest {
     void shouldUseDefaultValuesWhenOnlyBucketNameProvided() {
       // Given
       Map<String, String> configs =
-          S3StorageTestConfigProvider.builder().bucketName("test-bucket").build();
+          S3StorageConfigFixture.builder().bucketName("test-bucket").build();
 
       // When
       s3Storage.configure(configs);
@@ -86,7 +86,7 @@ class S3StorageTest {
     @Test
     void shouldThrowExceptionWhenBucketNameIsMissing() {
       // Given
-      Map<String, String> configs = S3StorageTestConfigProvider.builder().build();
+      Map<String, String> configs = S3StorageConfigFixture.builder().build();
 
       // When & Then
       assertThatExceptionOfType(ConfigException.class)
@@ -102,7 +102,7 @@ class S3StorageTest {
     @BeforeEach
     void setUp() {
       Map<String, String> configs =
-          S3StorageTestConfigProvider.builder().bucketName("test-bucket").build();
+          S3StorageConfigFixture.builder().bucketName("test-bucket").build();
       s3Storage.configure(configs);
     }
 
@@ -140,7 +140,7 @@ class S3StorageTest {
     @BeforeEach
     void setUp() {
       Map<String, String> configs =
-          S3StorageTestConfigProvider.builder().bucketName("test-bucket").build();
+          S3StorageConfigFixture.builder().bucketName("test-bucket").build();
       s3Storage.configure(configs);
     }
 

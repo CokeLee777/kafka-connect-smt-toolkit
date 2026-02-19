@@ -18,6 +18,8 @@ dependencies {
     implementation "software.amazon.awssdk:s3"
     implementation "software.amazon.awssdk:apache-client"
 
+    testImplementation project(':test-utils')
+
     // Kafka Connect(Test)
     testImplementation "org.apache.kafka:connect-api:${kafkaVersion}"
     testImplementation "org.apache.kafka:connect-transforms:${kafkaVersion}"

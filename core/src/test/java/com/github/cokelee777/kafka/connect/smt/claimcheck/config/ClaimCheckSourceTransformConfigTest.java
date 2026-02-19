@@ -6,7 +6,7 @@ import static com.github.cokelee777.kafka.connect.smt.claimcheck.config.ClaimChe
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.ClaimCheckSourceTransformTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.ClaimCheckSourceTransformConfigFixture;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
 import java.util.Collections;
 import java.util.Map;
@@ -24,7 +24,7 @@ class ClaimCheckSourceTransformConfigTest {
     void shouldConstructWithAllProvidedArguments() {
       // Given
       Map<String, String> configs =
-          ClaimCheckSourceTransformTestConfigProvider.builder()
+          ClaimCheckSourceTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .thresholdBytes(1024)
               .build();
@@ -41,7 +41,7 @@ class ClaimCheckSourceTransformConfigTest {
     void shouldUseDefaultValuesWhenOptionalArgumentsNotProvided() {
       // Given
       Map<String, String> configs =
-          ClaimCheckSourceTransformTestConfigProvider.builder()
+          ClaimCheckSourceTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .build();
 
@@ -56,7 +56,7 @@ class ClaimCheckSourceTransformConfigTest {
     @Test
     void shouldThrowConfigExceptionWhenStorageTypeIsMissing() {
       // Given
-      Map<String, String> configs = ClaimCheckSourceTransformTestConfigProvider.builder().build();
+      Map<String, String> configs = ClaimCheckSourceTransformConfigFixture.builder().build();
 
       // When & Then
       assertThatExceptionOfType(ConfigException.class)
@@ -85,7 +85,7 @@ class ClaimCheckSourceTransformConfigTest {
     void shouldValidateStorageTypeConfigAcceptsValidValues() {
       // Given
       Map<String, String> validConfigs =
-          ClaimCheckSourceTransformTestConfigProvider.builder()
+          ClaimCheckSourceTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .thresholdBytes(1024)
               .build();

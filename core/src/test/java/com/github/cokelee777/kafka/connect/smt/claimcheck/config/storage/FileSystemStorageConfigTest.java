@@ -3,7 +3,7 @@ package com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage;
 import static com.github.cokelee777.kafka.connect.smt.claimcheck.config.storage.FileSystemStorageConfig.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.FileSystemStorageTestConfigProvider;
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.FileSystemStorageConfigFixture;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,7 +36,7 @@ class FileSystemStorageConfigTest {
       // Given
       String path = tempDir.toString();
       Map<String, String> configs =
-          FileSystemStorageTestConfigProvider.builder()
+          FileSystemStorageConfigFixture.builder()
               .path(path)
               .retryMax(5)
               .retryBackoffMs(500L)
@@ -58,7 +58,7 @@ class FileSystemStorageConfigTest {
     @Test
     void shouldUseDefaultValuesWhenNoArgumentsProvided() {
       // Given
-      Map<String, String> configs = FileSystemStorageTestConfigProvider.builder().build();
+      Map<String, String> configs = FileSystemStorageConfigFixture.builder().build();
 
       // When
       FileSystemStorageConfig config = new FileSystemStorageConfig(configs);

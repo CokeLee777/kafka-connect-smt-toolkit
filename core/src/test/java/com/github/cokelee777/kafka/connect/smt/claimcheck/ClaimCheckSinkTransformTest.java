@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.ClaimCheckSinkTransformConfigFixture;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckHeader;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckMetadata;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
@@ -40,7 +41,7 @@ class ClaimCheckSinkTransformTest {
     void shouldConfigureWithAllProvidedArguments() {
       // Given
       Map<String, String> configs =
-          ClaimCheckSinkTransformTestConfigProvider.builder()
+          ClaimCheckSinkTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .build();
 
@@ -59,7 +60,7 @@ class ClaimCheckSinkTransformTest {
     @BeforeEach
     void setUp() {
       Map<String, String> configs =
-          ClaimCheckSinkTransformTestConfigProvider.builder()
+          ClaimCheckSinkTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .build();
       transform.configure(configs);

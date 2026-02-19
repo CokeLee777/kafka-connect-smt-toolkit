@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
+import com.github.cokelee777.kafka.connect.smt.claimcheck.fixture.config.ClaimCheckSourceTransformConfigFixture;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.model.ClaimCheckHeader;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.ClaimCheckStorageType;
 import com.github.cokelee777.kafka.connect.smt.claimcheck.storage.type.S3Storage;
@@ -35,7 +36,7 @@ class ClaimCheckSourceTransformTest {
     void shouldConfigureWithAllProvidedArguments() {
       // Given
       Map<String, String> configs =
-          ClaimCheckSourceTransformTestConfigProvider.builder()
+          ClaimCheckSourceTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .thresholdBytes(1024)
               .build();
@@ -56,7 +57,7 @@ class ClaimCheckSourceTransformTest {
     @BeforeEach
     void setUp() {
       Map<String, String> configs =
-          ClaimCheckSourceTransformTestConfigProvider.builder()
+          ClaimCheckSourceTransformConfigFixture.builder()
               .storageType(ClaimCheckStorageType.S3.type())
               .thresholdBytes(1)
               .build();
