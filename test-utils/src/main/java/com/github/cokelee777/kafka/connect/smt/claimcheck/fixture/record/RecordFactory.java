@@ -274,25 +274,6 @@ public class RecordFactory {
     return new SinkRecord(topic, partition, null, key, null, value, offset);
   }
 
-  /**
-   * Creates a schemaless {@link SinkRecord} that mirrors a schemaless {@link SourceRecord} —
-   * convenient when the source and sink transforms share the same schemaless flow.
-   *
-   * @param sourceRecord a schemaless {@link SourceRecord} (valueSchema must be {@code null})
-   * @return a mirrored schemaless {@link SinkRecord}
-   * @throws IllegalArgumentException if the given record has a non-null value schema
-   */
-  @SuppressWarnings("unchecked")
-  public static SinkRecord schemalessSinkRecord(SourceRecord sourceRecord) {
-    if (sourceRecord.valueSchema() != null) {
-      throw new IllegalArgumentException(
-          "Expected a schemaless SourceRecord but valueSchema was present. "
-              + "Use sinkRecord() for schema-based records.");
-    }
-    return schemalessSinkRecord(
-        sourceRecord.topic(), sourceRecord.key(), (Map<String, Object>) sourceRecord.value());
-  }
-
   private static Schema buildSchema(Map<String, Schema> fields) {
     SchemaBuilder builder = SchemaBuilder.struct();
     fields.forEach(builder::field);
