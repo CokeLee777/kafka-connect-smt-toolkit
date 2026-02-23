@@ -48,10 +48,11 @@ structured data using Kafka Connect's `Schema` and `Struct` API.
 
 *Source Connectors (ClaimCheckSourceTransform):*
 
-| Connector                               | Tested Version | Status     | Notes                                                                                |
-|-----------------------------------------|----------------|------------|--------------------------------------------------------------------------------------|
-| **Debezium MySQL CDC Source Connector** | 2.6.2          | ✅ Verified | Tested with Debezium CDC envelope (before/after/source/op) and deeply nested schemas |
-| **Confluent JDBC Source Connector**     | 10.7.6         | ✅ Verified | Tested with complex nested Struct schemas (non-CDC, snapshot-based records)          |
+| Connector                                | Tested Version | Status     | Notes                                                                                |
+|------------------------------------------|----------------|------------|--------------------------------------------------------------------------------------|
+| **Debezium MySQL CDC Source Connector**  | 2.6.2          | ✅ Verified | Tested with Debezium CDC envelope (before/after/source/op) and deeply nested schemas |
+| **Debezium Oracle CDC Source Connector** | 2.6.2          | ✅ Verified | Tested with Debezium CDC envelope (before/after/source/op) and deeply nested schemas |
+| **Confluent JDBC Source Connector**      | 10.7.6         | ✅ Verified | Tested with complex nested Struct schemas (non-CDC, snapshot-based records)          |
 
 *Sink Connectors (ClaimCheckSinkTransform):*
 
