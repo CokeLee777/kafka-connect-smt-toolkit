@@ -7,7 +7,7 @@ subprojects {
     apply plugin: 'com.diffplug.spotless'
 
     group = 'com.github.cokelee777'
-    version = '2.0.0'
+    version = '2.0.1'
 
     java {
         sourceCompatibility = JavaVersion.VERSION_17
